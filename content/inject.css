@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════
+   InstaRemix v3.1 — by Mauxx AI
+   mauxxai.online | github.com/mauxxai/Insta-Remix
+   ═══════════════════════════════════════════ */
+
+/* ── Strip all Instagram backgrounds ── */
+body.ir-active,
+body.ir-active > *,
+body.ir-active div,
+body.ir-active header,
+body.ir-active main,
+body.ir-active nav,
+body.ir-active aside,
+body.ir-active section,
+body.ir-active [class*="x1n2onr6"],
+body.ir-active [class*="x9f619"],
+body.ir-active [class*="xdt5ytf"],
+body.ir-active [class*="x1iyjqo2"],
+body.ir-active [class*="_aa_6"],
+body.ir-active [class*="_aaj2"] {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* ── Background layer ── */
+#ir-bg-layer {
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  width: 100vw !important; height: 100vh !important;
+  z-index: -9999 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+#ir-bg-layer img, #ir-bg-layer .ir-fill {
+  width: 100% !important; height: 100% !important;
+  object-fit: cover !important; object-position: center !important;
+  display: block !important;
+}
+
+/* ── Profile Widget — isolated, won't bleed into page ── */
+#ir-profile-widget {
+  position: fixed !important;
+  top: 72px !important;
+  right: 16px !important;
+  width: 220px !important;
+  z-index: 99990 !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  background: rgba(10,10,18,0.92) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(167,139,250,0.18) !important;
+  /* Isolation — nothing inside bleeds out to Instagram DOM */
+  isolation: isolate !important;
+  contain: layout style !important;
+}
+
+/* ALL widget children scoped tightly */
+#ir-profile-widget * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  line-height: 1.3 !important;
+  box-sizing: border-box !important;
+  /* Reset anything Instagram might have applied */
+  text-decoration: none !important;
+  letter-spacing: 0 !important;
+}
+
+#ir-profile-widget .ir-pw-inner {
+  padding: 12px 12px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+}
+#ir-profile-widget .ir-pw-avatar {
+  width: 40px !important; height: 40px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--ir-accent, #a78bfa) !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+#ir-profile-widget .ir-pw-avatar-placeholder {
+  width: 40px !important; height: 40px !important;
+  border-radius: 50% !important;
+  border: 2px solid var(--ir-accent, #a78bfa) !important;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 16px !important; flex-shrink: 0 !important;
+  color: white !important;
+}
+#ir-profile-widget .ir-pw-info {
+  flex: 1 !important; min-width: 0 !important; overflow: hidden !important;
+}
+#ir-profile-widget .ir-pw-name {
+  font-size: 12px !important; font-weight: 700 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  display: block !important; margin: 0 !important; padding: 0 !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-handle {
+  font-size: 10px !important; font-weight: 400 !important;
+  color: rgba(255,255,255,0.45) !important;
+  white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  display: block !important; margin: 0 !important; padding: 0 !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-stats {
+  display: flex !important;
+  padding: 10px 10px 8px !important;
+  gap: 4px !important;
+  margin: 0 !important;
+}
+#ir-profile-widget .ir-pw-stat {
+  flex: 1 !important; text-align: center !important;
+  padding: 5px 2px !important;
+  border-radius: 7px !important;
+  background: rgba(255,255,255,0.05) !important;
+  margin: 0 !important;
+}
+#ir-profile-widget .ir-pw-stat-num {
+  font-size: 12px !important; font-weight: 800 !important;
+  color: var(--ir-accent, #a78bfa) !important;
+  display: block !important; margin: 0 !important; padding: 0 !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-stat-label {
+  font-size: 8px !important; font-weight: 600 !important;
+  color: rgba(255,255,255,0.35) !important;
+  text-transform: uppercase !important; letter-spacing: 0.3px !important;
+  display: block !important; margin: 2px 0 0 !important; padding: 0 !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-footer {
+  padding: 6px 12px 8px !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+  margin: 0 !important;
+}
+#ir-profile-widget .ir-pw-brand {
+  font-size: 8px !important; font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: var(--ir-accent, #a78bfa) !important;
+  text-transform: uppercase !important;
+  opacity: 0.6 !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-close {
+  font-size: 11px !important; cursor: pointer !important;
+  color: rgba(255,255,255,0.3) !important;
+  width: 18px !important; height: 18px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  border-radius: 50% !important;
+  transition: background 0.2s !important;
+  background: transparent !important;
+}
+#ir-profile-widget .ir-pw-close:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: #fff !important;
+}
+
+/* ── Download Button — per post ── */
+.ir-dl-btn-post {
+  position: absolute !important;
+  bottom: 10px !important;
+  right: 10px !important;
+  z-index: 999 !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(10,10,20,0.82) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(167,139,250,0.35) !important;
+  color: #a78bfa !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s, background 0.2s !important;
+  font-size: 14px !important;
+  font-family: monospace !important;
+  line-height: 1 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+}
+article:hover .ir-dl-btn-post,
+[class*="x1qjc9v5"]:hover .ir-dl-btn-post {
+  opacity: 1 !important;
+}
+.ir-dl-btn-post:hover {
+  background: rgba(124,58,237,0.7) !important;
+  color: #fff !important;
+}
+.ir-dl-btn-post.done {
+  background: rgba(74,222,128,0.2) !important;
+  border-color: #4ade80 !important;
+  color: #4ade80 !important;
+  opacity: 1 !important;
+}
+
+/* Reel page download button */
+#ir-dl-reel-btn {
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 99998 !important;
+  background: rgba(10,10,20,0.88) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(167,139,250,0.3) !important;
+  color: #a78bfa !important;
+  border-radius: 30px !important;
+  padding: 8px 18px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  font-family: 'Space Mono', monospace !important;
+  letter-spacing: 0.5px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45) !important;
+  transition: all 0.2s !important;
+  white-space: nowrap !important;
+}
+#ir-dl-reel-btn:hover {
+  background: rgba(124,58,237,0.6) !important;
+  color: #fff !important;
+  border-color: #a78bfa !important;
+}
+
+/* Toast */
+#ir-toast {
+  position: fixed !important;
+  bottom: 80px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(8px) !important;
+  z-index: 999999 !important;
+  background: rgba(10,10,20,0.95) !important;
+  border: 1px solid rgba(74,222,128,0.35) !important;
+  color: #4ade80 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 7px 16px !important;
+  border-radius: 30px !important;
+  font-family: 'Space Mono', monospace !important;
+  letter-spacing: 0.3px !important;
+  opacity: 0 !important;
+  transition: opacity 0.25s, transform 0.25s !important;
+  pointer-events: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  white-space: nowrap !important;
+}
+#ir-toast.show { opacity: 1 !important; transform: translateX(-50%) translateY(0) !important; }
+#ir-toast.ir-err { border-color: rgba(248,113,113,0.35) !important; color: #f87171 !important; }
+
+
+/* ── Story/Modal pages — don't strip their overlay backgrounds ── */
+body.ir-active [role="dialog"],
+body.ir-active [role="dialog"] > *,
+body.ir-active [data-testid*="story"],
+body.ir-active [class*="story"] {
+  background-color: revert !important;
+  background-image: revert !important;
+}
+
+/* Story viewer dark overlay must stay */
+body.ir-active [style*="background-color: rgb(0"] {
+  background-color: revert !important;
+}
+
+/* Keep video backgrounds intact */
+body.ir-active video {
+  background: #000 !important;
+}
+
+/* Keep modal/dialog backgrounds */
+body.ir-active [role="dialog"] div {
+  background-color: revert !important;
+}
+
+/* ── Glassmorphism ── */
+body.ir-glassmorphism article,
+body.ir-glassmorphism [role="main"] > div > div > div > div {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(var(--ir-card-blur, 12px)) !important;
+  -webkit-backdrop-filter: blur(var(--ir-card-blur, 12px)) !important;
+  border-radius: var(--ir-border-radius, 8px) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* ── Layouts ── */
+body.ir-focus-mode [role="main"] { max-width: 620px !important; margin: 0 auto !important; }
+body.ir-hide-sidebar nav, body.ir-hide-sidebar [role="navigation"] { display: none !important; }
+body.ir-hide-suggestions aside { display: none !important; }
+body.ir-custom-font * { font-family: var(--ir-font) !important; }
+
+/* ── THEMES ── */
+body.ir-theme-cli { --ir-accent: #00ff41 !important; }
+body.ir-theme-cli #ir-profile-widget { box-shadow: 0 0 20px rgba(0,255,65,0.15) !important; border-color: rgba(0,255,65,0.3) !important; }
+body.ir-theme-cli .ir-pw-name { color: #00ff41 !important; font-family: 'Courier New',monospace !important; }
+body.ir-theme-cli .ir-pw-brand { color: #00ff41 !important; }
+
+body.ir-theme-vaporwave { --ir-accent: #ff71ce !important; }
+body.ir-theme-vaporwave #ir-profile-widget { box-shadow: 0 0 30px rgba(255,113,206,0.2) !important; border-color: rgba(255,113,206,0.25) !important; }
+
+body.ir-theme-cyberpunk { --ir-accent: #f9f002 !important; }
+body.ir-theme-cyberpunk #ir-profile-widget { border-color: rgba(249,240,2,0.4) !important; box-shadow: 2px 2px 0 #ff003c, 0 0 20px rgba(249,240,2,0.15) !important; }
+
+body.ir-theme-zen { --ir-accent: #94a3b8 !important; }
+body.ir-theme-cherry { --ir-accent: #f472b6 !important; }
+body.ir-theme-lava { --ir-accent: #ff4500 !important; }
+body.ir-theme-arctic { --ir-accent: #7dd3fc !important; }
+body.ir-theme-toxic { --ir-accent: #39ff14 !important; }
+body.ir-theme-gold { --ir-accent: #d4af37 !important; }
+
+/* Scrollbar */
+body.ir-active ::-webkit-scrollbar { width: 3px !important; }
+body.ir-active ::-webkit-scrollbar-track { background: transparent !important; }
+body.ir-active ::-webkit-scrollbar-thumb { background: var(--ir-accent, #a78bfa) !important; border-radius: 4px !important; }
+
+/* Badge */
+#ir-badge {
+  position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99990 !important;
+  background: linear-gradient(135deg,#7c3aed,#a78bfa) !important;
+  color: white !important; font-size: 9px !important; font-weight: 700 !important;
+  padding: 4px 10px !important; border-radius: 20px !important; letter-spacing: 1.5px !important;
+  opacity: 0.7 !important; cursor: pointer !important; font-family: monospace !important;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.4) !important;
+  text-transform: uppercase !important; white-space: nowrap !important;
+}
+#ir-badge:hover { opacity: 1 !important; }
