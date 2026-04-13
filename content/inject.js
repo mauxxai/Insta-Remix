@@ -243,6 +243,40 @@ function escHtml(s) {
 
 function removeWidget() { document.getElementById('ir-profile-widget')?.remove(); }
 
+// ── Theme-Specific Vibe Ticker (Masterpiece) ──
+function buildTerminalLog() {
+  const logId = 'ir-terminal-log';
+  document.getElementById(logId)?.remove();
+  const vocab = THEME_VOCAB[settings.theme] || THEME_VOCAB['default'];
+  
+  const log = document.createElement('div');
+  log.id = logId;
+  log.style.cssText = `position:fixed;bottom:20px;left:20px;width:240px;height:120px;background:var(--ir-surface);border:1px solid var(--ir-accent);z-index:99999;color:var(--ir-accent);font-family:var(--ir-font);font-size:9px;padding:8px;overflow:hidden;pointer-events:none;box-shadow:var(--ir-shadow);opacity:0.9;`;
+  log.innerHTML = `<div style="border-bottom:1px solid var(--ir-accent); margin-bottom:4px; font-weight:bold;">[${vocab.brand}_LOG]</div><div id="ir-log-lines"></div>`;
+  document.body.appendChild(log);
+
+  const THEME_LOGS = {
+    'cli': ['> Initializing connection...', '> Bypassing firewall...', '> Accessing CDN...', '> Decrypting packets...'],
+    'brutalist': ['# INCOMING DROP', '# CHECKING HYPE', '# VIBE SCANNING', '# MAXIMUM STEEZE'],
+    'aero': ['~ Gathering bubbles...', '~ Water flowing...', '~ Sunlight detected...', '~ Sky is clear...'],
+    'y2k': ['// GLITCH DETECTED', '// CYBER RELOAD', '// PULSE ACTIVE', '// RETRO SYNC'],
+    'acid': ['* SHIFTING PHASES', '* VISION CLEAR', '* TRIP ACTIVE', '* COLOR BENDING'],
+    'synth': ['>> WAVE RIDER', '>> GRID SYNC', '>> NEON BURST', '>> VAPOR ACTIVE']
+  };
+
+  const lines = THEME_LOGS[settings.theme] || ['... Analyzing ...', '... Syncing ...', '... Loading ...'];
+  let i = 0;
+  setInterval(() => {
+    const box = document.getElementById('ir-log-lines');
+    if (!box) return;
+    const l = document.createElement('div');
+    l.textContent = lines[i % lines.length];
+    box.prepend(l);
+    if (box.children.length > 8) box.lastChild.remove();
+    i++;
+  }, 3500);
+}
+
 // ── External Dependencies (Real-Time Engine) ──
 function injectPeerJS() {
   if (window.Peer) return;
