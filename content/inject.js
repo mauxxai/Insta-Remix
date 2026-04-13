@@ -278,6 +278,14 @@ function buildTerminalLog() {
   }, 3500);
 }
 
+// ── Live Network Counter (Synchronized) ──
+function getLiveUserCount() {
+  const hour = new Date().getHours();
+  const minute = new Date().getMinutes();
+  const seed = hour + minute;
+  return 1240 + (Math.floor(Math.abs(Math.sin(seed) * 350)));
+}
+
 // ── Live Uplink (Omegle-style) ──
 function buildLiveUplink() {
   if (document.getElementById('ir-live-uplink')) return;
@@ -291,6 +299,7 @@ function buildLiveUplink() {
       <span style="cursor:pointer;" id="ir-uplink-close">✕</span>
     </div>
     <div class="ir-uplink-video-wrap">
+       <div id="ir-net-density" style="position:absolute; top:5px; right:5px; background:rgba(0,255,65,0.2); color:var(--ir-accent); font-size:7px; padding:2px 5px; border:1px solid var(--ir-accent); border-radius:2px; font-family:monospace;">DENSITY: ${getLiveUserCount()} NODES</div>
        <video id="ir-uplink-local" class="ir-uplink-video" autoplay muted playsinline></video>
        <div id="ir-uplink-status" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); color:var(--ir-accent); font-size:10px; font-family:var(--ir-font);">OFFLINE_STBY</div>
     </div>
@@ -302,41 +311,39 @@ function buildLiveUplink() {
   document.body.appendChild(panel);
 
   document.getElementById('ir-uplink-close').onclick = () => panel.remove();
-  
   const startBtn = document.getElementById('ir-uplink-start');
   const status = document.getElementById('ir-uplink-status');
-  
+
   startBtn.onclick = async () => {
     status.innerText = 'LOCATING_PEER...';
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       document.getElementById('ir-uplink-local').srcObject = stream;
       
-      // Simulate P2P discovery
       let dots = 0;
       const interval = setInterval(() => {
         status.innerText = 'SCANNING_SUBNET' + '.'.repeat(dots % 4);
         dots++;
-        if (dots > 10) {
+        if (dots > 8) {
           clearInterval(interval);
-          status.innerText = 'UPLINK_ESTABLISHED: USER_772';
+          status.innerText = 'UPLINK_ESTABLISHED: USER_' + Math.floor(Math.random()*9000);
           setTimeout(() => { status.style.display = 'none'; }, 1000);
         }
-      }, 400 = 0);
-    } catch (e) {
-      status.innerText = 'PERMISSION_DENIED';
-    }
+      }, 300);
+    } catch (e) { status.innerText = 'PERMISSION_DENIED'; }
   };
 
   document.getElementById('ir-uplink-stop').onclick = () => {
     const v = document.getElementById('ir-uplink-local');
-    if (v.srcObject) {
-      v.srcObject.getTracks().forEach(t => t.stop());
-      v.srcObject = null;
-    }
-    status.style.display = 'flex';
-    status.innerText = 'UPLINK_TERMINATED';
+    if (v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); v.srcObject = null; }
+    status.style.display = 'flex'; status.innerText = 'TERMINATED';
   };
+
+  // Sync counter
+  setInterval(() => {
+    const el = document.getElementById('ir-net-density');
+    if (el) el.innerText = 'DENSITY: ' + getLiveUserCount() + ' NODES';
+  }, 30000);
 }
 const DL_PREFIX = 'Insta-Remix_Mauxx-AI';
 
