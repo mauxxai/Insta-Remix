@@ -102,6 +102,39 @@ body.ir-active [role="main"] > div > div > div > div {
   display: block !important;
 }
 
+/* ── GLOBAL UI ISOLATION (Fix for busy backgrounds) ── */
+body.ir-active [role="navigation"],
+body.ir-active div[role="navigation"] {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(15px) !important;
+  border-right: 1px solid var(--ir-accent) !important;
+  box-shadow: 5px 0 20px rgba(0,0,0,0.5) !important;
+}
+
+/* Sidebar Icons Contrast */
+body.ir-active [role="navigation"] svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,1)) !important;
+  color: var(--ir-accent) !important;
+  stroke-width: 2px !important;
+}
+
+/* Three-Dot Menu, Settings, and Native Modals */
+body.ir-active [role="dialog"],
+body.ir-active div[role="presentation"] > div > div {
+  background: var(--ir-surface) !important;
+  border: 1px solid var(--ir-accent) !important;
+  box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 15px var(--ir-accent) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: var(--ir-radius) !important;
+}
+
+/* Menu Item Text Protection */
+body.ir-active [role="menuitem"],
+body.ir-active [role="button"],
+body.ir-active h1, body.ir-active h2, body.ir-active h3, body.ir-active span {
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9) !important;
+}
+
 /* ── Profile Widget — isolated, won't bleed into page ── */
 /* ── Target Database (Profile Widget) ── */
 #ir-profile-widget {
