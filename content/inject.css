@@ -1,44 +1,100 @@
-/* ═══════════════════════════════════════════
-   InstaBook Secure v3.5 — Hacker Dashboard
-   by Mauxx AI · Masterpiece release
-   ═══════════════════════════════════════════ */
+:root {
+  /* Default Design Tokens */
+  --ir-bg: #000;
+  --ir-surface: #0a0a0a;
+  --ir-accent: #00ff41;
+  --ir-text: #00ff41;
+  --ir-border: 1px solid #00ff41;
+  --ir-radius: 8px;
+  --ir-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+  --ir-blur: 0px;
+  --ir-font: 'Space Mono', monospace;
+}
 
-/* ── Strip all Instagram backgrounds ── */
-body.ir-active,
-body.ir-active > *,
-body.ir-active div,
-body.ir-active header,
+/* ── THEME ENGINE: MASTERPIECE COLLECTION ── */
+
+/* 1. NEO-BRUTALIST (The 'Hypebeast' Dashboard) */
+body.ir-theme-brutalist {
+  --ir-bg: #ffde03;
+  --ir-surface: #ffffff;
+  --ir-accent: #000;
+  --ir-text: #000;
+  --ir-border: 4px solid #000 !important;
+  --ir-radius: 0px;
+  --ir-shadow: 8px 8px 0px #000;
+  --ir-font: 'Impact', 'Syne', sans-serif;
+}
+
+/* 2. Y2K CHROME (The 'Futurity' Mirror) */
+body.ir-theme-y2k {
+  --ir-bg: linear-gradient(45deg, #e0e0e0, #ffffff, #e0e0e0);
+  --ir-surface: rgba(255,255,255,0.4);
+  --ir-accent: #ff00ff;
+  --ir-text: #000;
+  --ir-border: 1px solid rgba(255,255,255,0.8);
+  --ir-radius: 20px;
+  --ir-shadow: 0 0 20px rgba(0, 236, 255, 0.4), inset 0 0 10px rgba(255,255,255,0.8);
+  --ir-blur: 15px;
+}
+
+/* 3. FRUTIGER AERO (The 'Glossy' Sanctuary) */
+body.ir-theme-aero {
+  --ir-bg: radial-gradient(circle at top, #b3e5fc, #e1f5fe);
+  --ir-surface: rgba(255,255,255,0.7);
+  --ir-accent: #00a8ff;
+  --ir-text: #005682;
+  --ir-border: 2px solid rgba(255,255,255,0.9);
+  --ir-radius: 40px;
+  --ir-shadow: 0 10px 30px rgba(0,168,255,0.2), inset 0 0 20px #fff;
+  --ir-blur: 20px;
+}
+
+/* 4. ACID DREAM (The 'Ultraviolet' Infiltration) */
+body.ir-theme-acid {
+  --ir-bg: #000000;
+  --ir-surface: rgba(0,0,0,0.8);
+  --ir-accent: #ccff00;
+  --ir-text: #ccff00;
+  --ir-border: 1px solid #ccff00;
+  --ir-radius: 4px;
+  --ir-shadow: 0 0 25px rgba(204, 255, 0, 0.4);
+}
+
+/* 5. SYNTH-SUNSET (The 'Retrowave' Grid) */
+body.ir-theme-synth {
+  --ir-bg: #1a0033;
+  --ir-surface: rgba(26,0,51,0.85);
+  --ir-accent: #ff00ff;
+  --ir-text: #ff00ff;
+  --ir-border: 1px solid #ff00ff;
+  --ir-radius: 4px;
+  --ir-shadow: 0 0 15px #ff00ff66;
+}
+
+body.ir-active {
+  background: var(--ir-bg) !important;
+  font-family: var(--ir-font) !important;
+}
+
+body.ir-active div, 
+body.ir-active header, 
 body.ir-active main,
-body.ir-active nav,
-body.ir-active aside,
-body.ir-active section {
-  background-color: #000000 !important;
+body.ir-active section,
+body.ir-active article {
+  background-color: transparent !important;
   background-image: none !important;
-  color: #00ff41 !important;
-  font-family: 'Courier New', Courier, monospace !important;
+  color: var(--ir-text) !important;
+  font-family: var(--ir-font) !important;
 }
 
-/* ── CRT Scanlines Overlay ── */
-body.ir-active::before {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 999999;
-  background-size: 100% 4px, 3px 100%;
-  pointer-events: none;
-  opacity: 0.15;
-}
-
-/* ── Background layer ── */
-#ir-bg-layer {
-  position: fixed !important;
-  top: 0 !important; left: 0 !important;
-  width: 100vw !important; height: 100vh !important;
-  z-index: -9999 !important;
-  pointer-events: none !important;
-  overflow: hidden !important;
+body.ir-active article, 
+body.ir-active [role="main"] > div > div > div > div {
+  background: var(--ir-surface) !important;
+  border: var(--ir-border) !important;
+  border-radius: var(--ir-radius) !important;
+  box-shadow: var(--ir-shadow) !important;
+  backdrop-filter: blur(var(--ir-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--ir-blur)) !important;
 }
 #ir-bg-layer img, #ir-bg-layer .ir-fill {
   width: 100% !important; height: 100% !important;
@@ -305,24 +361,64 @@ body.ir-hide-sidebar nav, body.ir-hide-sidebar [role="navigation"] { display: no
 body.ir-hide-suggestions aside { display: none !important; }
 body.ir-custom-font * { font-family: var(--ir-font) !important; }
 
-/* ── THEMES ── */
-body.ir-theme-cli { --ir-accent: #00ff41 !important; }
-body.ir-theme-cli #ir-profile-widget { box-shadow: 0 0 20px rgba(0,255,65,0.15) !important; border-color: rgba(0,255,65,0.3) !important; }
-body.ir-theme-cli .ir-pw-name { color: #00ff41 !important; font-family: 'Courier New',monospace !important; }
-body.ir-theme-cli .ir-pw-brand { color: #00ff41 !important; }
+/* ── THEMES: GEN Z MASTERPIECE COLLECTION ── */
 
-body.ir-theme-vaporwave { --ir-accent: #ff71ce !important; }
-body.ir-theme-vaporwave #ir-profile-widget { box-shadow: 0 0 30px rgba(255,113,206,0.2) !important; border-color: rgba(255,113,206,0.25) !important; }
+/* 1. NEO-BRUTALIST (The 'Hypebeast' Dashboard) */
+body.ir-theme-brutalist { --ir-accent: #ffde03 !important; background: #ffde03 !important; }
+body.ir-theme-brutalist article, 
+body.ir-theme-brutalist #ir-profile-widget { 
+  background: white !important; 
+  border: 4px solid #000 !important; 
+  box-shadow: 8px 8px 0px #000 !important; 
+  border-radius: 0 !important;
+  color: #000 !important;
+}
+body.ir-theme-brutalist * { color: #000 !important; font-weight: 900 !important; text-transform: uppercase; }
 
-body.ir-theme-cyberpunk { --ir-accent: #f9f002 !important; }
-body.ir-theme-cyberpunk #ir-profile-widget { border-color: rgba(249,240,2,0.4) !important; box-shadow: 2px 2px 0 #ff003c, 0 0 20px rgba(249,240,2,0.15) !important; }
+/* 2. Y2K CHROME (The 'Futurity' Mirror) */
+body.ir-theme-y2k { --ir-accent: #00ecff !important; background: linear-gradient(45deg, #e0e0e0, #ffffff, #e0e0e0) !important; }
+body.ir-theme-y2k article, 
+body.ir-theme-y2k #ir-profile-widget {
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(200,200,200,0.2)) !important;
+  border: 1px solid rgba(255,255,255,0.8) !important;
+  box-shadow: 0 0 15px rgba(0, 236, 255, 0.4), inset 0 0 10px rgba(255,255,255,0.8) !important;
+  backdrop-filter: blur(10px) !important;
+}
 
-body.ir-theme-zen { --ir-accent: #94a3b8 !important; }
-body.ir-theme-cherry { --ir-accent: #f472b6 !important; }
-body.ir-theme-lava { --ir-accent: #ff4500 !important; }
-body.ir-theme-arctic { --ir-accent: #7dd3fc !important; }
-body.ir-theme-toxic { --ir-accent: #39ff14 !important; }
-body.ir-theme-gold { --ir-accent: #d4af37 !important; }
+/* 3. FRUTIGER AERO (The 'Glossy' Sanctuary) */
+body.ir-theme-aero { --ir-accent: #00a8ff !important; background: linear-gradient(#b3e5fc, #e1f5fe) !important; }
+body.ir-theme-aero article, 
+body.ir-theme-aero #ir-profile-widget {
+  background: rgba(255,255,255,0.6) !important;
+  border-radius: 40px !important;
+  border: 2px solid rgba(255,255,255,0.9) !important;
+  box-shadow: 0 10px 30px rgba(0,168,255,0.2), inset 0 0 20px rgba(255,255,255,1) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+/* 4. ACID DREAM (The 'Ultraviolet' Infiltration) */
+body.ir-theme-acid { --ir-accent: #ccff00 !important; background: #000 !important; }
+body.ir-theme-acid article, 
+body.ir-theme-acid #ir-profile-widget {
+  background: rgba(0,0,0,0.8) !important;
+  border: 1px solid #ccff00 !important;
+  box-shadow: 0 0 20px #ccff0044, inset 0 0 10px #ccff0022 !important;
+  color: #ccff00 !important;
+}
+body.ir-theme-acid * { text-shadow: 0 0 5px #ccff00 !important; }
+
+/* 5. SYNTH-SUNSET (The 'Retrowave' Grid) */
+body.ir-theme-synth { --ir-accent: #ff00ff !important; background: #1a0033 !important; }
+body.ir-theme-synth::after {
+  content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-image: linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px; z-index: -1; pointer-events: none;
+}
+body.ir-theme-synth article {
+  background: rgba(26,0,51,0.8) !important;
+  border: 1px solid #ff00ff !important;
+  box-shadow: 0 0 15px #ff00ff66 !important;
+}
 
 /* Scrollbar */
 body.ir-active ::-webkit-scrollbar { width: 3px !important; }

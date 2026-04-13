@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>InstaRemix</title>
+<title>InstaBook Secure</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -155,10 +155,10 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
 
 <div class="header">
   <div class="logo">
-    <div class="logo-icon">✦</div>
+    <div class="logo-icon">🛡️</div>
     <div>
-      <div class="logo-text">InstaRemix</div>
-      <div class="logo-sub">by Mauxx AI</div>
+      <div class="logo-text">InstaBook Secure</div>
+      <div class="logo-sub">Hacker Edition · Mauxx AI</div>
     </div>
   </div>
   <div class="master-toggle" id="masterToggle">
@@ -239,8 +239,33 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
     <div class="mood-grid" id="moodGrid"></div>
   </div>
   <div class="section">
-    <div class="section-title">Visual Themes</div>
-    <div class="theme-grid" id="themeGrid"></div>
+    <div class="section-title">Masterpiece Themes</div>
+    <div class="theme-grid" id="themeGrid">
+      <!-- 1. CLI -->
+      <div class="theme-card" data-theme="cli" style="background:#000; border:1px solid #00ff41;">
+        <span style="color:#00ff41">CLI_SECURE</span>
+      </div>
+      <!-- 2. BRUTALIST -->
+      <div class="theme-card" data-theme="brutalist" style="background:#ffde03; border:2px solid #000;">
+        <span style="color:#000">BRUTALIST</span>
+      </div>
+      <!-- 3. Y2K -->
+      <div class="theme-card" data-theme="y2k" style="background:linear-gradient(45deg, #ff71ce, #01cdfe); border:1px solid #fff;">
+        <span style="color:#fff">Y2K_CHROME</span>
+      </div>
+      <!-- 4. AERO -->
+      <div class="theme-card" data-theme="aero" style="background:rgba(255,255,255,0.8); border:1px solid #00a8ff; border-radius:10px;">
+        <span style="color:#00a8ff">AERO_GLASS</span>
+      </div>
+      <!-- 5. ACID -->
+      <div class="theme-card" data-theme="acid" style="background:#000; border:1px solid #ccff00;">
+        <span style="color:#ccff00">ACID_DREAM</span>
+      </div>
+      <!-- 6. SYNTH -->
+      <div class="theme-card" data-theme="synth" style="background:#1a0033; border:1px solid #ff00ff;">
+        <span style="color:#ff00ff">SYNTH_WAVE</span>
+      </div>
+    </div>
   </div>
   <div class="section">
     <div class="section-title">Accent Color</div>
@@ -369,7 +394,7 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
 </div>
 
 <div class="footer">
-  <span class="footer-brand">INSTAREMIX v3.1 · MAUXX AI</span>
+  <span class="footer-brand">INSTABOOK SECURE v3.5 · MAUXX AI</span>
   <a class="footer-link" href="https://mauxxai.online" target="_blank">mauxxai.online ↗</a>
 </div>
 

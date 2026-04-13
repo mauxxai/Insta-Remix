@@ -13,8 +13,14 @@ const DEFAULTS = {
   showProfileWidget: true, showDownloadBar: true,
 };
 
-const THEME_CLASSES = ['ir-theme-cli','ir-theme-vaporwave','ir-theme-cyberpunk',
-  'ir-theme-zen','ir-theme-cherry','ir-theme-lava','ir-theme-arctic','ir-theme-toxic','ir-theme-gold'];
+const THEME_CLASSES = [
+  'ir-theme-cli',       // Hacker Mode
+  'ir-theme-brutalist', // Neo-Brutalism
+  'ir-theme-y2k',       // Y2K Chrome
+  'ir-theme-aero',      // Frutiger Aero
+  'ir-theme-acid',      // Acid Dream
+  'ir-theme-synth'      // Synth-Sunset
+];
 const LAYOUT_CLASSES = ['ir-layout-magazine','ir-layout-grid'];
 
 let settings = { ...DEFAULTS };
@@ -425,13 +431,25 @@ new MutationObserver(() => {
   }
 }).observe(document, { subtree:true, childList:true });
 
-// Re-inject download buttons when new posts load (infinite scroll)
-let dlObserver = null;
-function startDlObserver() {
-  dlObserver?.disconnect();
-  dlObserver = new MutationObserver(() => {
-    if (settings.enabled && settings.showDownloadBar !== false) injectDownloadButtons();
+// ── High-Performance Spatial Observer (Senior Developer Pattern) ──
+let throttleTimer = null;
+const UI_REPLACEMENT_DELAY = 450;
+
+function startOptimizedObserver() {
+  const observer = new MutationObserver((mutations) => {
+    if (throttleTimer) return;
+    
+    throttleTimer = setTimeout(() => {
+      throttleTimer = null;
+      
+      const hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
+      if (hasAddedNodes) {
+        if (settings.enabled && settings.showDownloadBar !== false) injectDownloadButtons();
+      }
+    }, UI_REPLACEMENT_DELAY);
   });
-  dlObserver.observe(document.body, { childList:true, subtree:true });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 }
-startDlObserver();
+
+startOptimizedObserver();
