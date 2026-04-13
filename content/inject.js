@@ -235,20 +235,21 @@ function getFilename(type, ext) {
 }
 
 async function downloadUrl(url, filename) {
-  try {
-    const res = await fetch(url, { mode:'cors', credentials:'omit' });
-    if (!res.ok) throw new Error(res.status);
-    const blob = await res.blob();
-    const ext = blob.type.includes('video') ? 'mp4' : blob.type.includes('png') ? 'png' : 'jpg';
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename || getFilename('media', ext);
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    return true;
-  } catch(e) { console.error('[InstaRemix DL]', e); return false; }
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({
+      action: 'downloadFile',
+      url: url,
+      filename: filename
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('[InstaRemix DL Script Error]', chrome.runtime.lastError);
+        resolve(false);
+      } else {
+        if (!response?.success) console.error('[InstaRemix DL Backend Error]', response?.error);
+        resolve(response?.success || false);
+      }
+    });
+  });
 }
 
 function findMediaInEl(el) {
