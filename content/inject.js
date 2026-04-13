@@ -21,6 +21,16 @@ const THEME_CLASSES = [
   'ir-theme-acid',      // Acid Dream
   'ir-theme-synth'      // Synth-Sunset
 ];
+
+const THEME_VOCAB = {
+  'cli':       { p: 'Packets',  f: 'Nodes',  fl: 'Links', brand: 'SECURE_INFILTRATION' },
+  'brutalist': { p: 'Drops',    f: 'Hype',   fl: 'Vibes', brand: 'NEO_BRUTAL_DASH' },
+  'y2k':       { p: 'Cyber',    f: 'Pulse',  fl: 'Glitch', brand: 'CYBER_NOSTALGIA' },
+  'aero':      { p: 'Springs',  f: 'Flows',  fl: 'Nature', brand: 'AERO_SANCTUARY' },
+  'acid':      { p: 'Dream',    f: 'Vision', fl: 'Shift', brand: 'ACID_TRIP' },
+  'synth':     { p: 'Waves',    f: 'Grids',  fl: 'Neons', brand: 'RETROWAVE_OS' },
+  'default':   { p: 'Posts',    f: 'Followers', fl: 'Following', brand: 'INSTABOOK_SECURE' }
+};
 const LAYOUT_CLASSES = ['ir-layout-magazine','ir-layout-grid'];
 
 let settings = { ...DEFAULTS };
@@ -102,6 +112,7 @@ function removeBgLayer() { document.getElementById('ir-bg-layer')?.remove(); }
 function buildWidget(s) {
   removeWidget();
   const data = scrapeProfile();
+  const vocab = THEME_VOCAB[s.theme] || THEME_VOCAB['default'];
 
   const w = document.createElement('div');
   w.id = 'ir-profile-widget';
@@ -114,28 +125,28 @@ function buildWidget(s) {
     <div class="ir-pw-inner">
       ${avatarHtml}
       <div class="ir-pw-info">
-        <div style="font-size:8px; color:#00ff41; opacity:0.6;">[TARGET_IDENTITY]</div>
-        <span class="ir-pw-name" style="color:#00ff41 !important;">${escHtml(data.name || 'ANONYMOUS_USER')}</span>
-        <span class="ir-pw-handle" style="color:#00ff41 !important; opacity:0.8;">NODE_ID: ${data.handle ? escHtml(data.handle) : 'UNKNOWN'}</span>
+        <div style="font-size:8px; color:var(--ir-accent); opacity:0.6;">IDENT_SERIAL: ${Math.floor(Math.random()*90000)}</div>
+        <span class="ir-pw-name">${escHtml(data.name || 'USER_ID')}</span>
+        <span class="ir-pw-handle" style="opacity:0.8;">@${data.handle || 'Guest'}</span>
       </div>
     </div>
     <div class="ir-pw-stats">
-      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+      <div class="ir-pw-stat">
         <span class="ir-pw-stat-num">${data.posts || '0'}</span>
-        <span class="ir-pw-stat-label">Packets</span>
+        <span class="ir-pw-stat-label">${vocab.p}</span>
       </div>
-      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+      <div class="ir-pw-stat">
         <span class="ir-pw-stat-num">${data.followers || '0'}</span>
-        <span class="ir-pw-stat-label">Nodes</span>
+        <span class="ir-pw-stat-label">${vocab.f}</span>
       </div>
-      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+      <div class="ir-pw-stat">
         <span class="ir-pw-stat-num">${data.following || '0'}</span>
-        <span class="ir-pw-stat-label">Links</span>
+        <span class="ir-pw-stat-label">${vocab.fl}</span>
       </div>
     </div>
-    <div class="ir-pw-footer" style="padding: 6px 12px 8px; display: flex; align-items: center; justify-content: space-between; background: #001100; border-top: 1px solid #00ff41;">
-      <span class="ir-pw-brand" style="font-size:8px; font-weight:700; color:#00ff41 !important;">INSTABOOK_SECURE [v3.5]</span>
-      <span class="ir-pw-close" id="ir-pw-close" style="color:#00ff41 !important; cursor:pointer;">✕</span>
+    <div class="ir-pw-footer" style="background:var(--ir-surface); border-top:1px solid var(--ir-accent);">
+      <span class="ir-pw-brand" style="font-size:8px; font-weight:700; color:var(--ir-accent) !important;">${vocab.brand}</span>
+      <span class="ir-pw-close" id="ir-pw-close" style="color:var(--ir-accent); cursor:pointer;">✕</span>
     </div>`;
 
   document.body.appendChild(w);
@@ -232,26 +243,29 @@ function escHtml(s) {
 
 function removeWidget() { document.getElementById('ir-profile-widget')?.remove(); }
 
-// ── Hacker Terminal Log ──
+// ── Theme-Specific Vibe Ticker ──
 function buildTerminalLog() {
-  if (document.getElementById('ir-terminal-log')) return;
+  const logId = 'ir-terminal-log';
+  document.getElementById(logId)?.remove();
+
+  const vocab = THEME_VOCAB[settings.theme] || THEME_VOCAB['default'];
+  
   const log = document.createElement('div');
-  log.id = 'ir-terminal-log';
-  log.style.cssText = `position:fixed;bottom:20px;left:20px;width:240px;height:120px;background:rgba(0,0,0,0.8);border:1px solid #00ff41;z-index:99999;color:#00ff41;font-family:monospace;font-size:9px;padding:8px;overflow:hidden;pointer-events:none;box-shadow:0 0 10px rgba(0,255,65,0.2);`;
-  log.innerHTML = `<div style="border-bottom:1px solid #00ff41; margin-bottom:4px; font-weight:bold;">[SYS_SCAN_LOG]</div><div id="ir-log-lines"></div>`;
+  log.id = logId;
+  log.style.cssText = `position:fixed;bottom:20px;left:20px;width:240px;height:120px;background:var(--ir-surface);border:1px solid var(--ir-accent);z-index:99999;color:var(--ir-accent);font-family:var(--ir-font);font-size:9px;padding:8px;overflow:hidden;pointer-events:none;box-shadow:var(--ir-shadow);opacity:0.9;`;
+  log.innerHTML = `<div style="border-bottom:1px solid var(--ir-accent); margin-bottom:4px; font-weight:bold;">[${vocab.brand}_LOG]</div><div id="ir-log-lines"></div>`;
   document.body.appendChild(log);
 
-  const lines = [
-    '> Initializing connection...',
-    '> Bypassing Instagram firewall...',
-    '> Accessing content CDN...',
-    '> Extracting node metadata...',
-    '> Decrypting user packets...',
-    '> Mapping social network layers...',
-    '> Target located: searching...',
-    '> Buffer overflow prevented.',
-    '> Secure tunnel established.'
-  ];
+  const THEME_LOGS = {
+    'cli': ['> Initializing connection...', '> Bypassing firewall...', '> Accessing CDN...', '> Decrypting packets...'],
+    'brutalist': ['# INCOMING DROP', '# CHECKING HYPE', '# VIBE SCANNING', '# MAXIMUM STEEZE'],
+    'aero': ['~ Gathering bubbles...', '~ Water flowing...', '~ Sunlight detected...', '~ Sky is clear...'],
+    'y2k': ['// GLITCH DETECTED', '// CYBER RELOAD', '// PULSE ACTIVE', '// RETRO SYNC'],
+    'acid': ['* SHIFTING PHASES', '* VISION CLEAR', '* TRIP ACTIVE', '* COLOR BENDING'],
+    'synth': ['>> WAVE RIDER', '>> GRID SYNC', '>> NEON BURST', '>> VAPOR ACTIVE']
+  };
+
+  const lines = THEME_LOGS[settings.theme] || ['... Analyzing ...', '... Syncing ...', '... Loading ...'];
   let i = 0;
   setInterval(() => {
     const box = document.getElementById('ir-log-lines');
@@ -261,7 +275,7 @@ function buildTerminalLog() {
     box.prepend(l);
     if (box.children.length > 8) box.lastChild.remove();
     i++;
-  }, 3000);
+  }, 3500);
 }
 
 // ── Download Buttons ─────────────────────────────────
