@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "InstaRemix — Instagram Designer",
-  "version": "3.0.0",
-  "description": "Redesign your Instagram with custom backgrounds, 10 themes, mood presets, profile widget & power features. By Mauxx AI.",
+  "name": "InstaBook Secure — Hacker Dashboard",
+  "version": "3.5.0",
+  "description": "The ultimate aesthetic security dashboard for Instagram. Hacker Mode, Matrix VFX, and Network Scanning. By Mauxx AI.",
   "permissions": ["storage", "activeTab", "downloads"],
   "host_permissions": ["https://www.instagram.com/*", "https://*.cdninstagram.com/*", "https://*.fbcdn.net/*"],
   "background": {

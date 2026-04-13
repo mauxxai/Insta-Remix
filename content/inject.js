@@ -100,7 +100,6 @@ function buildWidget(s) {
   const w = document.createElement('div');
   w.id = 'ir-profile-widget';
 
-  // Avatar HTML
   const avatarHtml = data.avatar
     ? `<img class="ir-pw-avatar" src="${data.avatar}" alt="">`
     : `<div class="ir-pw-avatar-placeholder">👤</div>`;
@@ -109,27 +108,28 @@ function buildWidget(s) {
     <div class="ir-pw-inner">
       ${avatarHtml}
       <div class="ir-pw-info">
-        <span class="ir-pw-name">${escHtml(data.name || 'Instagram User')}</span>
-        <span class="ir-pw-handle">${data.handle ? '@'+escHtml(data.handle) : window.location.hostname}</span>
+        <div style="font-size:8px; color:#00ff41; opacity:0.6;">[TARGET_IDENTITY]</div>
+        <span class="ir-pw-name" style="color:#00ff41 !important;">${escHtml(data.name || 'ANONYMOUS_USER')}</span>
+        <span class="ir-pw-handle" style="color:#00ff41 !important; opacity:0.8;">NODE_ID: ${data.handle ? escHtml(data.handle) : 'UNKNOWN'}</span>
       </div>
     </div>
     <div class="ir-pw-stats">
-      <div class="ir-pw-stat">
-        <span class="ir-pw-stat-num">${data.posts || '—'}</span>
-        <span class="ir-pw-stat-label">Posts</span>
+      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+        <span class="ir-pw-stat-num">${data.posts || '0'}</span>
+        <span class="ir-pw-stat-label">Packets</span>
       </div>
-      <div class="ir-pw-stat">
-        <span class="ir-pw-stat-num">${data.followers || '—'}</span>
-        <span class="ir-pw-stat-label">Followers</span>
+      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+        <span class="ir-pw-stat-num">${data.followers || '0'}</span>
+        <span class="ir-pw-stat-label">Nodes</span>
       </div>
-      <div class="ir-pw-stat">
-        <span class="ir-pw-stat-num">${data.following || '—'}</span>
-        <span class="ir-pw-stat-label">Following</span>
+      <div class="ir-pw-stat" style="border:1px solid rgba(0,255,65,0.2); background:transparent !important;">
+        <span class="ir-pw-stat-num">${data.following || '0'}</span>
+        <span class="ir-pw-stat-label">Links</span>
       </div>
     </div>
-    <div class="ir-pw-footer">
-      <span class="ir-pw-brand">INSTAREMIX</span>
-      <span class="ir-pw-close" id="ir-pw-close">✕</span>
+    <div class="ir-pw-footer" style="padding: 6px 12px 8px; display: flex; align-items: center; justify-content: space-between; background: #001100; border-top: 1px solid #00ff41;">
+      <span class="ir-pw-brand" style="font-size:8px; font-weight:700; color:#00ff41 !important;">INSTABOOK_SECURE [v3.5]</span>
+      <span class="ir-pw-close" id="ir-pw-close" style="color:#00ff41 !important; cursor:pointer;">✕</span>
     </div>`;
 
   document.body.appendChild(w);
@@ -225,6 +225,38 @@ function escHtml(s) {
 }
 
 function removeWidget() { document.getElementById('ir-profile-widget')?.remove(); }
+
+// ── Hacker Terminal Log ──
+function buildTerminalLog() {
+  if (document.getElementById('ir-terminal-log')) return;
+  const log = document.createElement('div');
+  log.id = 'ir-terminal-log';
+  log.style.cssText = `position:fixed;bottom:20px;left:20px;width:240px;height:120px;background:rgba(0,0,0,0.8);border:1px solid #00ff41;z-index:99999;color:#00ff41;font-family:monospace;font-size:9px;padding:8px;overflow:hidden;pointer-events:none;box-shadow:0 0 10px rgba(0,255,65,0.2);`;
+  log.innerHTML = `<div style="border-bottom:1px solid #00ff41; margin-bottom:4px; font-weight:bold;">[SYS_SCAN_LOG]</div><div id="ir-log-lines"></div>`;
+  document.body.appendChild(log);
+
+  const lines = [
+    '> Initializing connection...',
+    '> Bypassing Instagram firewall...',
+    '> Accessing content CDN...',
+    '> Extracting node metadata...',
+    '> Decrypting user packets...',
+    '> Mapping social network layers...',
+    '> Target located: searching...',
+    '> Buffer overflow prevented.',
+    '> Secure tunnel established.'
+  ];
+  let i = 0;
+  setInterval(() => {
+    const box = document.getElementById('ir-log-lines');
+    if (!box) return;
+    const l = document.createElement('div');
+    l.textContent = lines[i % lines.length];
+    box.prepend(l);
+    if (box.children.length > 8) box.lastChild.remove();
+    i++;
+  }, 3000);
+}
 
 // ── Download Buttons ─────────────────────────────────
 const DL_PREFIX = 'Insta-Remix_Mauxx-AI';
@@ -354,6 +386,7 @@ function loadAndApply() {
     if (data.irSettings) settings = { ...DEFAULTS, ...data.irSettings };
     widgetHidden = false;
     applySettings(settings);
+    if (settings.enabled) buildTerminalLog();
   });
 }
 

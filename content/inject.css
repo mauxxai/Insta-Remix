@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
-   InstaRemix v3.1 — by Mauxx AI
-   mauxxai.online | github.com/mauxxai/Insta-Remix
+   InstaBook Secure v3.5 — Hacker Dashboard
+   by Mauxx AI · Masterpiece release
    ═══════════════════════════════════════════ */
 
 /* ── Strip all Instagram backgrounds ── */
@@ -11,15 +11,24 @@ body.ir-active header,
 body.ir-active main,
 body.ir-active nav,
 body.ir-active aside,
-body.ir-active section,
-body.ir-active [class*="x1n2onr6"],
-body.ir-active [class*="x9f619"],
-body.ir-active [class*="xdt5ytf"],
-body.ir-active [class*="x1iyjqo2"],
-body.ir-active [class*="_aa_6"],
-body.ir-active [class*="_aaj2"] {
-  background-color: transparent !important;
+body.ir-active section {
+  background-color: #000000 !important;
   background-image: none !important;
+  color: #00ff41 !important;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* ── CRT Scanlines Overlay ── */
+body.ir-active::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 999999;
+  background-size: 100% 4px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.15;
 }
 
 /* ── Background layer ── */
@@ -38,23 +47,20 @@ body.ir-active [class*="_aaj2"] {
 }
 
 /* ── Profile Widget — isolated, won't bleed into page ── */
+/* ── Target Database (Profile Widget) ── */
 #ir-profile-widget {
   position: fixed !important;
   top: 72px !important;
   right: 16px !important;
-  width: 220px !important;
+  width: 260px !important;
   z-index: 99990 !important;
-  border-radius: 14px !important;
+  border-radius: 2px !important;
   overflow: hidden !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06) !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  background: rgba(10,10,18,0.92) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(167,139,250,0.18) !important;
-  /* Isolation — nothing inside bleeds out to Instagram DOM */
+  box-shadow: 0 0 20px rgba(0,255,65,0.2) !important;
+  font-family: 'Courier New', monospace !important;
+  background: #050505 !important;
+  border: 1px solid #00ff41 !important;
   isolation: isolate !important;
-  contain: layout style !important;
 }
 
 /* ALL widget children scoped tightly */
