@@ -277,14 +277,7 @@ function buildTerminalLog() {
   }, 3500);
 }
 
-// ── External Dependencies (Real-Time Engine) ──
-function injectPeerJS() {
-  if (window.Peer) return;
-  const script = document.createElement('script');
-  script.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
-  document.head.appendChild(script);
-}
-injectPeerJS();
+// ── Real-Time Engine (Loaded locally via Manifest) ──
 
 // ── Live Network Counter ──
 function getLiveUserCount() {
