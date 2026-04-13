@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "InstaRemix — Instagram Designer",
+  "version": "3.0.0",
+  "description": "Redesign your Instagram with custom backgrounds, 10 themes, mood presets, profile widget & power features. By Mauxx AI.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://www.instagram.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.instagram.com/*"],
+      "js": ["content/inject.js"],
+      "css": ["content/inject.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "InstaRemix by Mauxx AI"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "author": "Mauxx AI — mauxxai.online",
+  "homepage_url": "https://github.com/mauxxai/Insta-Remix"
+}
