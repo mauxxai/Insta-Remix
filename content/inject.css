@@ -1,14 +1,27 @@
 :root {
-  /* Default Design Tokens */
+  /* Default DESIGN: Clean, Minimal, Professional */
   --ir-bg: #000;
-  --ir-surface: #0a0a0a;
+  --ir-surface: #0f0f15;
+  --ir-accent: #a78bfa;
+  --ir-text: #ffffff;
+  --ir-border: 1px solid rgba(255,255,255,0.1);
+  --ir-radius: 8px;
+  --ir-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  --ir-blur: 0px;
+  --ir-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 0. HACKER CLI (The 'Secure' Infiltration) */
+body.ir-theme-cli {
+  --ir-bg: #000;
+  --ir-surface: #001100;
   --ir-accent: #00ff41;
   --ir-text: #00ff41;
   --ir-border: 1px solid #00ff41;
-  --ir-radius: 8px;
-  --ir-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
-  --ir-blur: 0px;
-  --ir-font: 'Space Mono', monospace;
+  --ir-radius: 2px;
+  --ir-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+  --ir-accent-glow: #00ff41;
+  --ir-font: 'Courier New', monospace;
 }
 
 /* ── THEME ENGINE: MASTERPIECE COLLECTION ── */
@@ -102,51 +115,33 @@ body.ir-active [role="main"] > div > div > div > div {
   display: block !important;
 }
 
-/* ── GLOBAL UI ISOLATION (Fix for busy backgrounds) ── */
-body.ir-active [role="navigation"],
-body.ir-active div[role="navigation"] {
+/* ── GLOBAL UI ISOLATION (Only for CLI Theme) ── */
+body.ir-theme-cli [role="navigation"],
+body.ir-theme-cli div[role="navigation"] {
   background: rgba(0, 0, 0, 0.7) !important;
   backdrop-filter: blur(25px) brightness(0.5) !important;
   border-right: 2px solid var(--ir-accent) !important;
   box-shadow: 15px 0 40px rgba(0,0,0,0.8) !important;
 }
 
-/* Sidebar Icons Contrast - Force White/Accent */
-body.ir-active [role="navigation"] svg {
+body.ir-theme-cli [role="navigation"] svg {
   filter: drop-shadow(0 0 8px var(--ir-accent-glow)) !important;
   color: var(--ir-accent) !important;
 }
 
-/* Three-Dot Menu, Settings, and Native Modals (Solid Case) */
-body.ir-active [role="dialog"],
-body.ir-active div[role="presentation"] > div > div {
+/* Three-Dot Menu, Settings, and Native Modals (Solid Case for CLI) */
+body.ir-theme-cli [role="dialog"],
+body.ir-theme-cli div[role="presentation"] > div > div {
   background: #000000 !important;
   border: 2px solid var(--ir-accent) !important;
   box-shadow: 0 0 60px rgba(0,0,0,1), 0 0 25px var(--ir-accent) !important;
   backdrop-filter: blur(40px) !important;
-  border-radius: var(--ir-radius) !important;
 }
 
-/* Setting Items / 3-dot options */
-body.ir-active [role="dialog"] button,
-body.ir-active [role="dialog"] span {
-  background: transparent !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  text-shadow: 0 0 10px rgba(0,0,0,1) !important;
-}
-
-body.ir-active [role="dialog"] button:hover {
-  background: rgba(255,255,255,0.1) !important;
-}
-
-/* Profile Stat Boxes */
-#ir-profile-widget .ir-pw-stat {
-  background: rgba(0,0,0,0.8) !important;
-  border: 1px solid var(--ir-accent) !important;
-  padding: 8px !important;
-  border-radius: 6px !important;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.5) !important;
+/* Generic Isolation for ALL themes (Clean) */
+body.ir-active [role="navigation"] {
+    background: var(--ir-surface) !important;
+    border-right: 1px solid rgba(255,255,255,0.1) !important;
 }
 
 /* ── Profile Widget — isolated, won't bleed into page ── */

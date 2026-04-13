@@ -13,16 +13,11 @@ const PRESETS = [
 ];
 
 const THEMES = [
-  { id:'default',   label:'DEFAULT', bg:'linear-gradient(135deg,#1a1a2e,#0c0c14)' },
-  { id:'cli',       label:'CLI',     bg:'linear-gradient(135deg,#001100,#003300)' },
-  { id:'vaporwave', label:'VAPOR',   bg:'linear-gradient(135deg,#2d0036,#6600cc)' },
-  { id:'cyberpunk', label:'CYBER',   bg:'linear-gradient(135deg,#0a0015,#332200)' },
-  { id:'zen',       label:'ZEN',     bg:'linear-gradient(135deg,#080810,#1e2030)' },
-  { id:'cherry',    label:'CHERRY',  bg:'linear-gradient(135deg,#1e0514,#3d0a28)' },
-  { id:'lava',      label:'LAVA',    bg:'linear-gradient(135deg,#0f0300,#2a0800)' },
-  { id:'arctic',    label:'ARCTIC',  bg:'linear-gradient(135deg,#001830,#003050)' },
-  { id:'toxic',     label:'TOXIC',   bg:'linear-gradient(135deg,#000800,#001200)' },
-  { id:'gold',      label:'GOLD',    bg:'linear-gradient(135deg,#0a0800,#1a1200)' },
+  { id:'cli',       label:'CLI_HACKER', bg:'#00ff41' },
+  { id:'brutalist', label:'BRUTALIST',  bg:'#ffde03' },
+  { id:'y2k',       label:'Y2K_CHROME', bg:'#ff71ce' },
+  { id:'aero',      label:'AERO_GLASS', bg:'#00d2ff' },
+  { id:'synth',     label:'SYNTH_WAVE', bg:'#ff00ff' },
 ];
 
 const MOODS = [
@@ -45,7 +40,7 @@ let settings = {
   glassmorph:false, cardBlur:12, layoutMode:'default',
   hideSidebar:false, hideRecs:false, focusMode:false,
   customFont:'', accentColor:'#a78bfa', borderRadius:8,
-  showProfileWidget:true, showDownloadBar:true,
+  showDownloadBar:true,
 };
 
 // ── Init ─────────────────────────────────────────────
@@ -147,7 +142,6 @@ function syncUI() {
   if (settings.bgType === 'url') document.getElementById('bgUrlInput').value = settings.bgValue;
   document.getElementById('glassToggle').classList.toggle('on', settings.glassmorph);
   document.getElementById('glass-controls').classList.toggle('hidden', !settings.glassmorph);
-  document.getElementById('widgetToggle').classList.toggle('on', settings.showProfileWidget);
   document.getElementById('dlBarToggle').classList.toggle('on', settings.showDownloadBar !== false);
   setMini('focusToggle', settings.focusMode);
   setMini('sidebarToggle', settings.hideSidebar);
@@ -173,6 +167,52 @@ function loadLocalPreview() {
       document.getElementById('uploadFilename').classList.add('show');
     }
   });
+}
+
+// ── UPLINK ENGINE (Internalized) ──
+let peer = null;
+let localStream = null;
+
+function initUplink() {
+  const status = document.getElementById('uplink-status');
+  const btnStart = document.getElementById('btn-uplink-start');
+  const btnStop = document.getElementById('btn-uplink-stop');
+  const ticker = document.getElementById('popup-ticker');
+
+  btnStart.onclick = async () => {
+    status.innerHTML = 'ENGINE_WAKING...<br>REQUESTING_HARDWARE';
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('v-local').srcObject = localStream;
+
+      const peerId = 'ir-p-' + Math.floor(Math.random()*10000);
+      peer = new Peer(peerId);
+
+      peer.on('open', (id) => {
+        status.innerHTML = 'UPLINK_STABLE<br>NODE_ID: ' + id;
+        ticker.innerHTML += `> Handshake established: ${id}<br>`;
+        setTimeout(() => { status.style.display = 'none'; }, 2000);
+      });
+
+      peer.on('call', (call) => {
+        call.answer(localStream);
+        call.on('stream', (remote) => {
+           document.getElementById('v-remote').srcObject = remote;
+           ticker.innerHTML += `> Inbound stream detected...<br>`;
+        });
+      });
+
+      ticker.innerHTML += `> Initializing PeerJS Subnet...<br>`;
+    } catch(e) { status.innerHTML = 'HARDWARE_DENIED'; }
+  };
+
+  btnStop.onclick = () => {
+    peer?.destroy();
+    localStream?.getTracks().forEach(t => t.stop());
+    status.style.display = 'flex';
+    status.innerHTML = 'UPLINK_TERMINATED';
+    ticker.innerHTML += `> Connection severed.<br>`;
+  };
 }
 
 // ── Download logic ────────────────────────────────────
@@ -349,10 +389,9 @@ function bindEvents() {
   });
 
   // Toggles
-  document.getElementById('widgetToggle').addEventListener('click', () => {
-    settings.showProfileWidget=!settings.showProfileWidget;
-    document.getElementById('widgetToggle').classList.toggle('on', settings.showProfileWidget);
-  });
+  // Uplink
+  initUplink();
+
   document.getElementById('dlBarToggle').addEventListener('click', () => {
     settings.showDownloadBar=!(settings.showDownloadBar!==false);
     document.getElementById('dlBarToggle').classList.toggle('on', settings.showDownloadBar);

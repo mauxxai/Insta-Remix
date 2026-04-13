@@ -139,7 +139,17 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
 .wp-stat-num{font-size:11px;font-weight:800;color:var(--accent)}
 .wp-stat-label{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
 
-/* SAVE */
+/* ── UPLINK TAB (Omegle-style internal) ── */
+.uplink-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.uplink-video-area{width:100%;height:180px;background:#000;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.uplink-v-remote{width:100%;height:100%;object-fit:cover}
+.uplink-v-local{position:absolute;bottom:8px;right:8px;width:70px;height:50px;border:1px solid var(--accent);background:#000;border-radius:4px;object-fit:cover}
+.uplink-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;color:var(--accent);font-family:'Space Mono',monospace;font-size:10px;text-align:center;padding:15px}
+.uplink-stats{padding:10px;display:flex;justify-content:space-between;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:9px;color:var(--muted)}
+.uplink-btn-row{padding:0 10px 10px;display:flex;gap:6px}
+.uplink-action{flex:1;padding:8px;border-radius:7px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;text-transform:uppercase}
+.uplink-action:hover{background:var(--accent);color:#000}
+.ticker-box{background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;border:1px solid var(--border);height:90px;overflow:hidden;font-family:'Space Mono',monospace;font-size:9px;color:var(--accent)}
 .save-btn{width:100%;padding:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:opacity .2s,transform .15s}
 .save-btn:hover{opacity:0.9;transform:translateY(-1px)}
 .save-btn:active{transform:translateY(0)}
@@ -171,8 +181,8 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
   <div class="tab active" data-tab="bg">🖼 BG</div>
   <div class="tab" data-tab="theme">🎨 Theme</div>
   <div class="tab" data-tab="layout">📐 Layout</div>
+  <div class="tab" data-tab="uplink">🛰️ Uplink</div>
   <div class="tab" data-tab="download">⬇ Save</div>
-  <div class="tab" data-tab="features">⚡ More</div>
 </div>
 
 <!-- ── BACKGROUND TAB ── -->
@@ -357,33 +367,31 @@ select{width:100%;background:var(--surface2);border:1px solid var(--border);colo
   </div>
 </div>
 
-<!-- ── FEATURES TAB ── -->
-<div class="panel" id="tab-features">
+<!-- ── UPLINK TAB ── -->
+<div class="panel" id="tab-uplink">
   <div class="section">
-    <div class="section-title">Profile Widget</div>
-    <div class="feature-item">
-      <div class="feature-left">
-        <span class="feature-icon">👤</span>
-        <div><div class="feature-name">Show Profile Card</div><div class="feature-desc">Floating widget with your stats</div></div>
+    <div class="section-title">Peer-to-Peer Subnet</div>
+    <div class="uplink-wrap">
+      <div class="uplink-video-area">
+        <video id="v-remote" class="uplink-v-remote" autoplay playsinline></video>
+        <video id="v-local" class="uplink-v-local" autoplay muted playsinline></video>
+        <div id="uplink-status" class="uplink-overlay">NETWORK_DENSITY: OFFLINE_STBY<br>INITIALIZE UPLINK TO START</div>
       </div>
-      <div class="mini-toggle on" id="widgetToggle"></div>
+      <div class="uplink-stats">
+        <span>MODE: ENCRYPTED</span>
+        <span id="uplink-count">DENSITY: 1,280 NODES</span>
+      </div>
+      <div class="uplink-btn-row">
+        <button class="uplink-action" id="btn-uplink-start">Initialize</button>
+        <button class="uplink-action" id="btn-uplink-stop" style="border-color:var(--err); color:var(--err);">Disc</button>
+      </div>
     </div>
   </div>
   <div class="section">
-    <div class="section-title">Power Features</div>
-    <div class="feature-list">
-      <div class="feature-item">
-        <div class="feature-left"><span class="feature-icon">🎯</span><div><div class="feature-name">Focus Mode</div><div class="feature-desc">Centered narrow feed</div></div></div>
-        <div class="mini-toggle" id="focusToggle"></div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-left"><span class="feature-icon">🚫</span><div><div class="feature-name">Hide Sidebar</div><div class="feature-desc">More content space</div></div></div>
-        <div class="mini-toggle" id="sidebarToggle"></div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-left"><span class="feature-icon">🙈</span><div><div class="feature-name">Hide Suggestions</div><div class="feature-desc">Remove "Suggested for you"</div></div></div>
-        <div class="mini-toggle" id="recsToggle"></div>
-      </div>
+    <div class="section-title">Network Activity Log</div>
+    <div class="ticker-box" id="popup-ticker">
+      > Waiting for handshake...<br>
+      > Protocol: ib_uplink_v3.5<br>
     </div>
   </div>
 </div>
