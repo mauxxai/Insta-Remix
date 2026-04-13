@@ -3,8 +3,8 @@
   "name": "InstaBook Secure — Hacker Dashboard",
   "version": "3.5.0",
   "description": "The ultimate aesthetic security dashboard for Instagram. Hacker Mode, Matrix VFX, and Network Scanning. By Mauxx AI.",
-  "permissions": ["storage", "activeTab", "downloads"],
-  "host_permissions": ["https://www.instagram.com/*", "https://*.cdninstagram.com/*", "https://*.fbcdn.net/*"],
+  "permissions": ["storage", "activeTab", "downloads", "notifications"],
+  "host_permissions": ["https://www.instagram.com/*", "https://*.cdninstagram.com/*", "https://*.fbcdn.net/*", "https://*.peerjs.com/*"],
   "background": {
     "service_worker": "background.js"
   },

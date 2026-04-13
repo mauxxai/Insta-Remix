@@ -425,14 +425,71 @@ body.ir-active ::-webkit-scrollbar { width: 3px !important; }
 body.ir-active ::-webkit-scrollbar-track { background: transparent !important; }
 body.ir-active ::-webkit-scrollbar-thumb { background: var(--ir-accent, #a78bfa) !important; border-radius: 4px !important; }
 
-/* Badge */
-#ir-badge {
-  position: fixed !important; bottom: 20px !important; right: 20px !important; z-index: 99990 !important;
-  background: linear-gradient(135deg,#7c3aed,#a78bfa) !important;
-  color: white !important; font-size: 9px !important; font-weight: 700 !important;
-  padding: 4px 10px !important; border-radius: 20px !important; letter-spacing: 1.5px !important;
-  opacity: 0.7 !important; cursor: pointer !important; font-family: monospace !important;
-  box-shadow: 0 2px 12px rgba(124,58,237,0.4) !important;
-  text-transform: uppercase !important; white-space: nowrap !important;
+/* ── Live Uplink Panel (Omegle-style) ── */
+#ir-live-uplink {
+  position: fixed !important;
+  bottom: 160px !important;
+  left: 20px !important;
+  width: 240px !important;
+  background: var(--ir-surface) !important;
+  border: 1px solid var(--ir-accent) !important;
+  border-radius: var(--ir-radius) !important;
+  box-shadow: var(--ir-shadow) !important;
+  z-index: 99999 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.ir-uplink-header {
+  padding: 6px 10px !important;
+  background: var(--ir-accent) !important;
+  color: var(--ir-surface) !important;
+  font-family: var(--ir-font) !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.ir-uplink-video-wrap {
+  width: 100% !important;
+  height: 140px !important;
+  background: #000 !important;
+  position: relative !important;
+}
+
+.ir-uplink-video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Hacker Mode Video Tint */
+body.ir-theme-cli .ir-uplink-video {
+  filter: sepia(100%) hue-rotate(90deg) brightness(1.2) contrast(1.2);
+}
+
+.ir-uplink-controls {
+  padding: 8px !important;
+  display: flex !important;
+  gap: 5px !important;
+}
+
+.ir-uplink-btn {
+  flex: 1 !important;
+  background: transparent !important;
+  border: 1px solid var(--ir-accent) !important;
+  color: var(--ir-accent) !important;
+  font-size: 10px !important;
+  padding: 4px 0 !important;
+  cursor: pointer !important;
+  font-family: var(--ir-font) !important;
+}
+
+.ir-uplink-btn:hover {
+  background: var(--ir-accent) !important;
+  color: var(--ir-surface) !important;
 }
 #ir-badge:hover { opacity: 1 !important; }
