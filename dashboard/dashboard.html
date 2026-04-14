@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAUXX AI | COMMAND CENTER — InstaBook Secure</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb"></div>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">🛡️</div>
+            <div class="brand-text">
+                <h1>MAUXX AI</h1>
+                <span>INFRASTRUCTURE</span>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item active" data-tab="overview">
+                <span class="icon">📊</span> Overview
+            </div>
+            <div class="nav-item" data-tab="themes">
+                <span class="icon">🎨</span> Visual Engine
+            </div>
+            <div class="nav-item" data-tab="security">
+                <span class="icon">🔐</span> Security & Ads
+            </div>
+            <div class="nav-item" data-tab="uplink">
+                <span class="icon">🛰️</span> Uplink Network
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <div class="status-dot online"></div>
+                <span>SYSTEM_ONLINE: v4.0.0</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content">
+        <header class="top-bar">
+            <div class="breadcrumb">COMMAND_CENTER / OVERVIEW</div>
+            <div class="top-actions">
+                <button class="btn btn-primary" id="launchIG">Open Instagram</button>
+                <button class="btn btn-secondary" id="launchEnterprise">Enterprise Console</button>
+            </div>
+        </header>
+
+        <!-- OVERVIEW TAB -->
+        <section class="tab-panel active" id="tab-overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">ADS_BLOCKED_SESSION</div>
+                    <div class="stat-value" id="stat-ads">1,204</div>
+                    <div class="stat-bar"><div style="width: 75%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ACTIVE_NODES_PEERJS</div>
+                    <div class="stat-value" id="stat-nodes">38.2k</div>
+                    <div class="stat-bar"><div style="width: 40%; background: #4ade80"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">DATA_ENCRYPTION</div>
+                    <div class="stat-value">AES-256</div>
+                    <div class="stat-bar"><div style="width: 100%; background: #7c3aed"></div></div>
+                </div>
+            </div>
+
+            <div class="main-grid">
+                <div class="card card-wide">
+                    <div class="card-header">Master Toggle — Global Injection</div>
+                    <div class="master-switch">
+                        <div class="switch-info">
+                            <h3>Extension Status</h3>
+                            <p>Enable/Disable all InstaBook modifications globally across Instagram.</p>
+                        </div>
+                        <div class="toggle-wrap">
+                            <label class="switch">
+                                <input type="checkbox" id="masterToggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Quick Actions</div>
+                    <div class="action-list">
+                        <button class="action-btn" id="clearStorage">🧹 Flush Local Storage</button>
+                        <button class="action-btn" id="resetSettings">🔄 Reset All Defaults</button>
+                        <button class="action-btn" id="openDocs">📝 Feature Docs</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISUAL ENGINE TAB -->
+        <section class="tab-panel" id="tab-themes">
+            <div class="card card-wide">
+                <div class="card-header">Theme Selection</div>
+                <div class="theme-shelf" id="themeGrid">
+                    <!-- Iterated by JS -->
+                </div>
+            </div>
+            
+            <div class="main-grid">
+                <div class="card">
+                    <div class="card-header">Accent Customization</div>
+                    <div class="input-group">
+                        <label>Global Highlight</label>
+                        <input type="color" id="accentColor" value="#a78bfa">
+                    </div>
+                    <div class="input-group">
+                        <label>Border Radius</label>
+                        <input type="range" id="borderRadius" min="0" max="30" value="8">
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Interface Logic</div>
+                    <div class="toggle-row">
+                        <span>Hide Feed Suggestions</span>
+                        <label class="switch small"><input type="checkbox" id="hideRecs"><span class="slider round"></span></label>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Hide Sidebar</span>
+                        <label class="switch small"><input type="checkbox" id="hideSidebar"><span class="slider round"></span></label>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Focus Mode</span>
+                        <label class="switch small"><input type="checkbox" id="focusMode"><span class="slider round"></span></label>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

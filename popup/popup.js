@@ -1,4 +1,5 @@
-// InstaRemix Popup v3.1 — by Mauxx AI · mauxxai.online
+(() => {
+// InstaRemix Popup v4.0 — by Mauxx AI · mauxxai.online
 
 const PRESETS = [
   { name:'AURORA',  url:'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80', grad:'linear-gradient(135deg,#0d1b2a,#1b4332)' },
@@ -21,11 +22,11 @@ const THEMES = [
 ];
 
 const MOODS = [
-  { id:'focus',    icon:'🎯', label:'Focus',   preset:'CITY',   theme:'zen',       font:"'Space Mono',monospace" },
-  { id:'chill',    icon:'😌', label:'Chill',   preset:'OCEAN',  theme:'arctic',    font:'' },
-  { id:'creative', icon:'🎨', label:'Create',  preset:'NEON',   theme:'vaporwave', font:'' },
+  { id:'focus',    icon:'🎯', label:'Focus',   preset:'CITY',   theme:'cli',       font:"'Space Mono',monospace" },
+  { id:'chill',    icon:'😌', label:'Chill',   preset:'OCEAN',  theme:'aero',      font:'' },
+  { id:'creative', icon:'🎨', label:'Create',  preset:'NEON',   theme:'synth',     font:'' },
   { id:'hacker',   icon:'💻', label:'Hacker',  preset:'COSMOS', theme:'cli',       font:"'Courier New',monospace" },
-  { id:'luxury',   icon:'👑', label:'Luxury',  preset:'MAUXX',  theme:'gold',      font:"'Georgia',serif" },
+  { id:'luxury',   icon:'👑', label:'Luxury',  preset:'MAUXX',  theme:'brutalist', font:"'Georgia',serif" },
 ];
 
 const LAYOUTS = [
@@ -40,7 +41,7 @@ let settings = {
   glassmorph:false, cardBlur:12, layoutMode:'default',
   hideSidebar:false, hideRecs:false, focusMode:false,
   customFont:'', accentColor:'#a78bfa', borderRadius:8,
-  showDownloadBar:true,
+  showDownloadBar:true, enterpriseMode:false
 };
 
 // ── Init ─────────────────────────────────────────────
@@ -55,6 +56,7 @@ function init() {
 // ── Builders ─────────────────────────────────────────
 function buildPresets() {
   const grid = document.getElementById('presetsGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   PRESETS.forEach(p => {
     const c = document.createElement('div');
@@ -73,6 +75,7 @@ function buildPresets() {
 
 function buildThemes() {
   const grid = document.getElementById('themeGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   THEMES.forEach(t => {
     const c = document.createElement('div');
@@ -91,6 +94,7 @@ function buildThemes() {
 
 function buildMoods() {
   const grid = document.getElementById('moodGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   MOODS.forEach(m => {
     const c = document.createElement('div');
@@ -111,6 +115,7 @@ function buildMoods() {
 
 function buildLayouts() {
   const grid = document.getElementById('layoutGrid');
+  if (!grid) return;
   grid.innerHTML = '';
   LAYOUTS.forEach(l => {
     const c = document.createElement('div');
@@ -128,21 +133,31 @@ function buildLayouts() {
 
 // ── Sync UI ───────────────────────────────────────────
 function syncUI() {
-  document.getElementById('mainToggle').classList.toggle('on', settings.enabled);
-  document.getElementById('toggleLabel').textContent = settings.enabled ? 'ON' : 'OFF';
+  document.getElementById('mainToggle')?.classList.toggle('on', settings.enabled);
+  const toggleLabel = document.getElementById('toggleLabel');
+  if (toggleLabel) toggleLabel.textContent = settings.enabled ? 'ON' : 'OFF';
   showBgSection(settings.bgType);
   document.querySelectorAll('[data-bgtype]').forEach(p => p.classList.toggle('active', p.dataset.bgtype === settings.bgType));
   setRange('bgOpacity', settings.bgOpacity, v => Math.round(v*100)+'%', 'bgOpacityVal');
   setRange('bgBlur', settings.bgBlur, v => v+'px', 'bgBlurVal');
   setRange('cardBlur', settings.cardBlur, v => v+'px', 'cardBlurVal');
   setRange('borderRadius', settings.borderRadius, v => v+'px', 'borderRadiusVal');
-  document.getElementById('accentColor').value = settings.accentColor;
-  document.getElementById('fontSelect').value = settings.customFont || '';
-  if (settings.bgType === 'gradient') document.getElementById('gradientInput').value = settings.bgValue;
-  if (settings.bgType === 'url') document.getElementById('bgUrlInput').value = settings.bgValue;
-  document.getElementById('glassToggle').classList.toggle('on', settings.glassmorph);
-  document.getElementById('glass-controls').classList.toggle('hidden', !settings.glassmorph);
-  document.getElementById('dlBarToggle').classList.toggle('on', settings.showDownloadBar !== false);
+  const accentColor = document.getElementById('accentColor');
+  if (accentColor) accentColor.value = settings.accentColor;
+  const fontSelect = document.getElementById('fontSelect');
+  if (fontSelect) fontSelect.value = settings.customFont || '';
+  if (settings.bgType === 'gradient') {
+    const gradInput = document.getElementById('gradientInput');
+    if (gradInput) gradInput.value = settings.bgValue;
+  }
+  if (settings.bgType === 'url') {
+    const urlInput = document.getElementById('bgUrlInput');
+    if (urlInput) urlInput.value = settings.bgValue;
+  }
+  document.getElementById('glassToggle')?.classList.toggle('on', settings.glassmorph);
+  document.getElementById('glass-controls')?.classList.toggle('hidden', !settings.glassmorph);
+  document.getElementById('dlBarToggle')?.classList.toggle('on', settings.showDownloadBar !== false);
+  document.getElementById('enterpriseToggle')?.classList.toggle('on', settings.enterpriseMode === true);
   setMini('focusToggle', settings.focusMode);
   setMini('sidebarToggle', settings.hideSidebar);
   setMini('recsToggle', settings.hideRecs);
@@ -150,21 +165,22 @@ function syncUI() {
 
 function showBgSection(type) {
   ['preset','local','url','color','gradient'].forEach(t =>
-    document.getElementById('wrap-'+t).classList.toggle('hidden', t !== type));
+    document.getElementById('wrap-'+t)?.classList.toggle('hidden', t !== type));
 }
 function setRange(id, val, fmt, lid) {
   const el = document.getElementById(id);
-  if (el) { el.value=val; document.getElementById(lid).textContent=fmt(val); }
+  const lbl = document.getElementById(lid);
+  if (el) { el.value=val; if(lbl) lbl.textContent=fmt(val); }
 }
 function setMini(id, val) { document.getElementById(id)?.classList.toggle('on', val); }
 
 function loadLocalPreview() {
   chrome.storage.local.get('irLocalBg', (data) => {
     if (data.irLocalBg) {
-      document.getElementById('uploadPreview').src = data.irLocalBg;
-      document.getElementById('uploadPreview').classList.add('show');
-      document.getElementById('uploadFilename').textContent = 'Saved image';
-      document.getElementById('uploadFilename').classList.add('show');
+      const up = document.getElementById('uploadPreview');
+      const uf = document.getElementById('uploadFilename');
+      if (up) { up.src = data.irLocalBg; up.classList.add('show'); }
+      if (uf) { uf.textContent = 'Saved image'; uf.classList.add('show'); }
     }
   });
 }
@@ -179,39 +195,50 @@ function initUplink() {
   const btnStop = document.getElementById('btn-uplink-stop');
   const ticker = document.getElementById('popup-ticker');
 
+  if (!btnStart) return;
+
   btnStart.onclick = async () => {
-    status.innerHTML = 'ENGINE_WAKING...<br>REQUESTING_HARDWARE';
+    if(status) status.innerHTML = 'ENGINE_WAKING...<br>REQUESTING_HARDWARE';
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      document.getElementById('v-local').srcObject = localStream;
+      const localVideo = document.getElementById('v-local');
+      if (localVideo) localVideo.srcObject = localStream;
 
-      const peerId = 'ir-p-' + Math.floor(Math.random()*10000);
+      const arr = new Uint8Array(6);
+      crypto.getRandomValues(arr);
+      const entropy = btoa(String.fromCharCode(...arr)).replace(/[+/=]/g, '').slice(0, 8);
+      const peerId = `ib_uplink_${entropy}`;
       peer = new Peer(peerId);
 
       peer.on('open', (id) => {
-        status.innerHTML = 'UPLINK_STABLE<br>NODE_ID: ' + id;
-        ticker.innerHTML += `> Handshake established: ${id}<br>`;
-        setTimeout(() => { status.style.display = 'none'; }, 2000);
+        if(status) {
+          status.innerHTML = 'UPLINK_STABLE<br>NODE_ID: ' + id;
+          setTimeout(() => { status.style.display = 'none'; }, 2000);
+        }
+        if(ticker) ticker.innerHTML += `> Handshake established: ${id}<br>`;
       });
 
       peer.on('call', (call) => {
         call.answer(localStream);
         call.on('stream', (remote) => {
-           document.getElementById('v-remote').srcObject = remote;
-           ticker.innerHTML += `> Inbound stream detected...<br>`;
+           const remoteVideo = document.getElementById('v-remote');
+           if (remoteVideo) remoteVideo.srcObject = remote;
+           if(ticker) ticker.innerHTML += `> Inbound stream detected...<br>`;
         });
       });
 
-      ticker.innerHTML += `> Initializing PeerJS Subnet...<br>`;
-    } catch(e) { status.innerHTML = 'HARDWARE_DENIED'; }
+      if(ticker) ticker.innerHTML += `> Initializing PeerJS Subnet...<br>`;
+    } catch(e) { if(status) status.innerHTML = 'HARDWARE_DENIED'; }
   };
 
   btnStop.onclick = () => {
     peer?.destroy();
     localStream?.getTracks().forEach(t => t.stop());
-    status.style.display = 'flex';
-    status.innerHTML = 'UPLINK_TERMINATED';
-    ticker.innerHTML += `> Connection severed.<br>`;
+    if (status) {
+      status.style.display = 'flex';
+      status.innerHTML = 'UPLINK_TERMINATED';
+    }
+    if (ticker) ticker.innerHTML += `> Connection severed.<br>`;
   };
 }
 
@@ -224,29 +251,23 @@ function getFilename(type, ext) {
 
 function setDlStatus(msg, cls='') {
   const el = document.getElementById('dlStatus');
-  el.textContent = msg; el.className = 'dl-status ' + cls;
+  if (el) { el.textContent = msg; el.className = 'dl-status ' + cls; }
 }
 
-// Resolve Instagram URL → try to get direct media
-// We use a 3rd party open API (cobalt.tools) which is free and respects privacy
 async function downloadFromUrl(instaUrl) {
   const btn = document.getElementById('dlFetchBtn');
+  if (!btn) return;
   btn.disabled = true; btn.textContent = '⏳ Fetching...';
   setDlStatus('Resolving media URL...', 'loading');
 
   try {
-    // Detect type from URL
     let type = 'post';
     if (instaUrl.includes('/reel')) type = 'reel';
     else if (instaUrl.includes('/stories')) type = 'story';
 
-    // Use cobalt.tools API — free, open source, no auth needed
     const res = await fetch('https://api.cobalt.tools/api/json', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         url: instaUrl.trim(),
         vQuality: 'max',
@@ -263,7 +284,6 @@ async function downloadFromUrl(instaUrl) {
       throw new Error(data.text || 'API returned error');
     }
 
-    // cobalt returns { status:'stream'|'redirect'|'picker', url, picker:[] }
     let downloadUrl = null;
     let ext = 'mp4';
 
@@ -271,7 +291,6 @@ async function downloadFromUrl(instaUrl) {
       downloadUrl = data.url;
       ext = data.url?.includes('.jpg') || data.url?.includes('.webp') ? 'jpg' : 'mp4';
     } else if (data.status === 'picker') {
-      // Multiple items (carousel) — download first
       downloadUrl = data.picker?.[0]?.url;
       ext = downloadUrl?.includes('.jpg') ? 'jpg' : 'mp4';
       setDlStatus(`📦 Carousel: downloading first of ${data.picker.length} items`, 'loading');
@@ -282,26 +301,21 @@ async function downloadFromUrl(instaUrl) {
     setDlStatus('Downloading...', 'loading');
     btn.textContent = '⏳ Saving...';
 
-    // Trigger download via anchor
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = getFilename(type, ext);
-    a.target = '_blank';
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => a.remove(), 1000);
+    // Route through the background service worker — anchor download is blocked for cross-origin URLs
+    await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        { action: 'downloadFile', url: downloadUrl, filename: getFilename(type, ext) },
+        (res) => {
+          if (res?.success) resolve();
+          else reject(new Error(res?.error || 'Download agent failed'));
+        }
+      );
+    });
 
     setDlStatus('✓ Download started! Check your Downloads folder.', 'ok');
-
-    // If picker, offer remaining
-    if (data.status === 'picker' && data.picker.length > 1) {
-      setTimeout(() => setDlStatus(`✓ Downloaded 1/${data.picker.length}. Open each post to get others.`, 'ok'), 2000);
-    }
-
   } catch(e) {
     console.error('[InstaRemix DL]', e);
-    setDlStatus('✗ ' + (e.message || 'Download failed. Make sure the URL is a public post.'), 'err');
+    setDlStatus('✗ ' + (e.message || 'Download failed.'), 'err');
   } finally {
     btn.disabled = false; btn.textContent = '⬇ Download';
   }
@@ -309,7 +323,6 @@ async function downloadFromUrl(instaUrl) {
 
 // ── Events ────────────────────────────────────────────
 function bindEvents() {
-  // Tabs
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -319,110 +332,120 @@ function bindEvents() {
     });
   });
 
-  // Master toggle
-  document.getElementById('masterToggle').addEventListener('click', () => {
+  document.getElementById('masterToggle')?.addEventListener('click', () => {
     settings.enabled = !settings.enabled;
-    document.getElementById('mainToggle').classList.toggle('on', settings.enabled);
-    document.getElementById('toggleLabel').textContent = settings.enabled ? 'ON' : 'OFF';
+    document.getElementById('mainToggle')?.classList.toggle('on', settings.enabled);
+    const toggleLabel = document.getElementById('toggleLabel');
+    if (toggleLabel) toggleLabel.textContent = settings.enabled ? 'ON' : 'OFF';
   });
 
-  // BG type pills
   document.querySelectorAll('[data-bgtype]').forEach(pill => {
     pill.addEventListener('click', () => {
       settings.bgType = pill.dataset.bgtype;
       document.querySelectorAll('[data-bgtype]').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       showBgSection(settings.bgType);
-      if (settings.bgType==='color') settings.bgValue = document.getElementById('bgColorPicker').value;
+      if (settings.bgType==='color') {
+        const picker = document.getElementById('bgColorPicker');
+        if (picker) settings.bgValue = picker.value;
+      }
       if (settings.bgType==='preset') { settings.bgValue=PRESETS[0].url; buildPresets(); }
     });
   });
 
-  // File upload
   const fileInput = document.getElementById('fileInput');
   const uploadZone = document.getElementById('uploadZone');
-  fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
-  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-  uploadZone.addEventListener('drop', e => {
-    e.preventDefault(); uploadZone.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f?.type.startsWith('image/')) handleFile(f);
-  });
+  if (fileInput) fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+  if (uploadZone) {
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault(); uploadZone.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f?.type.startsWith('image/')) handleFile(f);
+    });
+  }
 
   function handleFile(file) {
     const reader = new FileReader();
     reader.onload = e => {
       const dataUrl = e.target.result;
       chrome.storage.local.set({ irLocalBg: dataUrl }, () => {
-        document.getElementById('uploadPreview').src = dataUrl;
-        document.getElementById('uploadPreview').classList.add('show');
-        document.getElementById('uploadFilename').textContent = file.name;
-        document.getElementById('uploadFilename').classList.add('show');
+        const up = document.getElementById('uploadPreview');
+        const uf = document.getElementById('uploadFilename');
+        if (up) { up.src = dataUrl; up.classList.add('show'); }
+        if (uf) { uf.textContent = file.name; uf.classList.add('show'); }
         settings.bgType='local'; settings.bgValue='local';
         document.querySelectorAll('[data-bgtype]').forEach(p => p.classList.remove('active'));
-        document.querySelector('[data-bgtype="local"]').classList.add('active');
+        document.querySelector('[data-bgtype="local"]')?.classList.add('active');
         showBgSection('local');
       });
     };
     reader.readAsDataURL(file);
   }
 
-  // Ranges
   bindRange('bgOpacity', v => { settings.bgOpacity=+v; return Math.round(v*100)+'%'; }, 'bgOpacityVal');
   bindRange('bgBlur', v => { settings.bgBlur=+v; return v+'px'; }, 'bgBlurVal');
   bindRange('cardBlur', v => { settings.cardBlur=+v; return v+'px'; }, 'cardBlurVal');
   bindRange('borderRadius', v => { settings.borderRadius=+v; return v+'px'; }, 'borderRadiusVal');
 
-  // Colors / text
-  document.getElementById('accentColor').addEventListener('input', e => { settings.accentColor=e.target.value; });
-  document.getElementById('bgColorPicker').addEventListener('input', e => { if (settings.bgType==='color') settings.bgValue=e.target.value; });
-  document.getElementById('gradientInput').addEventListener('input', e => { if (settings.bgType==='gradient') settings.bgValue=e.target.value; });
-  document.getElementById('bgUrlInput').addEventListener('input', e => { if (settings.bgType==='url') settings.bgValue=e.target.value; });
-  document.getElementById('fontSelect').addEventListener('change', e => { settings.customFont=e.target.value; });
+  document.getElementById('accentColor')?.addEventListener('input', e => { settings.accentColor=e.target.value; });
+  document.getElementById('bgColorPicker')?.addEventListener('input', e => { if (settings.bgType==='color') settings.bgValue=e.target.value; });
+  document.getElementById('gradientInput')?.addEventListener('input', e => { if (settings.bgType==='gradient') settings.bgValue=e.target.value; });
+  document.getElementById('bgUrlInput')?.addEventListener('input', e => { if (settings.bgType==='url') settings.bgValue=e.target.value; });
+  document.getElementById('fontSelect')?.addEventListener('change', e => { settings.customFont=e.target.value; });
 
-  // Glass
-  document.getElementById('glassToggle').addEventListener('click', () => {
+  document.getElementById('glassToggle')?.addEventListener('click', () => {
     settings.glassmorph=!settings.glassmorph;
-    document.getElementById('glassToggle').classList.toggle('on', settings.glassmorph);
-    document.getElementById('glass-controls').classList.toggle('hidden', !settings.glassmorph);
+    document.getElementById('glassToggle')?.classList.toggle('on', settings.glassmorph);
+    document.getElementById('glass-controls')?.classList.toggle('hidden', !settings.glassmorph);
   });
 
-  // Toggles
-  // Uplink
   initUplink();
 
-  document.getElementById('dlBarToggle').addEventListener('click', () => {
-    settings.showDownloadBar=!(settings.showDownloadBar!==false);
-    document.getElementById('dlBarToggle').classList.toggle('on', settings.showDownloadBar);
+  document.getElementById('dlBarToggle')?.addEventListener('click', () => {
+    settings.showDownloadBar = !settings.showDownloadBar;
+    document.getElementById('dlBarToggle')?.classList.toggle('on', settings.showDownloadBar);
   });
+  document.getElementById('enterpriseToggle')?.addEventListener('click', () => {
+    settings.enterpriseMode = !settings.enterpriseMode;
+    document.getElementById('enterpriseToggle')?.classList.toggle('on', settings.enterpriseMode);
+  });
+
+  document.getElementById('launchEnterprise')?.addEventListener('click', () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('client/inssist.html') });
+  });
+
+  document.getElementById('openDashboard')?.addEventListener('click', () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard/dashboard.html') });
+  });
+
   bindMini('focusToggle','focusMode');
   bindMini('sidebarToggle','hideSidebar');
   bindMini('recsToggle','hideRecs');
 
-  // Download tab
-  document.getElementById('dlFetchBtn').addEventListener('click', () => {
+  document.getElementById('dlFetchBtn')?.addEventListener('click', () => {
     const url = document.getElementById('dlUrlInput').value.trim();
     if (!url) { setDlStatus('✗ Please paste an Instagram URL first', 'err'); return; }
     if (!url.includes('instagram.com')) { setDlStatus('✗ Only Instagram URLs supported', 'err'); return; }
     downloadFromUrl(url);
   });
-  document.getElementById('dlClearBtn').addEventListener('click', () => {
-    document.getElementById('dlUrlInput').value='';
+  document.getElementById('dlClearBtn')?.addEventListener('click', () => {
+    const inp = document.getElementById('dlUrlInput');
+    if (inp) inp.value='';
     setDlStatus('');
   });
-  // Allow Enter key in textarea
-  document.getElementById('dlUrlInput').addEventListener('keydown', e => {
-    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('dlFetchBtn').click(); }
+  document.getElementById('dlUrlInput')?.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('dlFetchBtn')?.click(); }
   });
 
-  // Save / Apply
-  document.getElementById('saveBtn').addEventListener('click', save);
+  document.getElementById('saveBtn')?.addEventListener('click', save);
 }
 
 function bindRange(id, setter, lid) {
   document.getElementById(id)?.addEventListener('input', e => {
-    document.getElementById(lid).textContent = setter(e.target.value);
+    const lbl = document.getElementById(lid);
+    if(lbl) lbl.textContent = setter(e.target.value);
   });
 }
 function bindMini(id, key) {
@@ -435,13 +458,22 @@ function bindMini(id, key) {
 function save() {
   chrome.storage.sync.set({ irSettings: settings }, () => {
     chrome.tabs.query({ active:true, currentWindow:true }, (tabs) => {
-      if (tabs[0]?.url?.includes('instagram.com'))
-        chrome.tabs.sendMessage(tabs[0].id, { action:'updateSettings', settings });
+      if (tabs[0]?.url?.includes('instagram.com')) {
+        chrome.tabs.sendMessage(tabs[0].id, { action:'updateSettings', settings }, () => {
+          if (chrome.runtime.lastError) {
+             console.log('[InstaRemix] Tab messaging suppressed (content script not ready)');
+          }
+        });
+      }
     });
     const s = document.getElementById('status');
-    s.textContent = '✓ Applied!';
-    setTimeout(()=>{ s.textContent=''; }, 2000);
+    if (s) {
+      s.textContent = '✓ Applied!';
+      setTimeout(()=>{ s.textContent=''; }, 2000);
+    }
   });
 }
 
 init();
+})();
+

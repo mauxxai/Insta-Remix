@@ -1,392 +1,316 @@
+(() => {
 // ═══════════════════════════════════════════════════════
-//  InstaRemix v3.1 — Content Script
-//  by Mauxx AI · mauxxai.online
-//  github.com/mauxxai/Insta-Remix
+//  InstaBook Secure v4.0.0 — Enterprise Suite Core
+//  Architected by Mauxx AI
 // ═══════════════════════════════════════════════════════
 
-const DEFAULTS = {
-  enabled: false, bgType: 'preset', bgValue: '',
-  bgOpacity: 1, bgBlur: 0, theme: 'default',
-  glassmorph: false, cardBlur: 12, layoutMode: 'default',
-  hideSidebar: false, hideRecs: false, focusMode: false,
-  customFont: '', accentColor: '#a78bfa', borderRadius: 8,
-  showProfileWidget: true, showDownloadBar: true,
-};
+if (window.InstaBookInitialized) return;
+window.InstaBookInitialized = true;
 
-const THEME_CLASSES = [
-  'ir-theme-cli',       // Hacker Mode
-  'ir-theme-brutalist', // Neo-Brutalism
-  'ir-theme-y2k',       // Y2K Chrome
-  'ir-theme-aero',      // Frutiger Aero
-  'ir-theme-acid',      // Acid Dream
-  'ir-theme-synth'      // Synth-Sunset
-];
+const InstaBook = {
+  config: {
+    defaults: {
+      enabled: false, bgType: 'preset', bgValue: '',
+      bgOpacity: 1, bgBlur: 0, theme: 'default',
+      glassmorph: false, cardBlur: 12, layoutMode: 'default',
+      hideSidebar: false, hideRecs: false, focusMode: false,
+      customFont: '', accentColor: '#a78bfa', borderRadius: 8,
+      showDownloadBar: true, enterpriseMode: false
+    },
+    themes: [
+      'ir-theme-cli', 'ir-theme-brutalist', 'ir-theme-y2k',
+      'ir-theme-aero', 'ir-theme-acid', 'ir-theme-synth'
+    ],
+    layouts: ['ir-layout-magazine', 'ir-layout-grid']
+  },
 
-const THEME_VOCAB = {
-  'cli':       { p: 'Packets',  f: 'Nodes',  fl: 'Links', brand: 'SECURE_INFILTRATION' },
-  'brutalist': { p: 'Drops',    f: 'Hype',   fl: 'Vibes', brand: 'NEO_BRUTAL_DASH' },
-  'y2k':       { p: 'Cyber',    f: 'Pulse',  fl: 'Glitch', brand: 'CYBER_NOSTALGIA' },
-  'aero':      { p: 'Springs',  f: 'Flows',  fl: 'Nature', brand: 'AERO_SANCTUARY' },
-  'acid':      { p: 'Dream',    f: 'Vision', fl: 'Shift', brand: 'ACID_TRIP' },
-  'synth':     { p: 'Waves',    f: 'Grids',  fl: 'Neons', brand: 'RETROWAVE_OS' },
-  'default':   { p: 'Posts',    f: 'Followers', fl: 'Following', brand: 'INSTABOOK_SECURE' }
-};
-const LAYOUT_CLASSES = ['ir-layout-magazine','ir-layout-grid'];
+  state: {
+    settings: {},
+    shadowRoot: null,
+    observer: null
+  },
 
-let settings = { ...DEFAULTS };
-let widgetHidden = false;
-
-// ── Apply ────────────────────────────────────────────
-function applySettings(s) {
-  const body = document.body;
-  if (!s.enabled) {
-    body.classList.remove('ir-active','ir-glassmorphism','ir-focus-mode',
-      'ir-hide-sidebar','ir-hide-suggestions','ir-custom-font',...THEME_CLASSES,...LAYOUT_CLASSES);
-    removeBgLayer(); removeWidget(); removeBadge(); removeDownloadButtons();
-    return;
-  }
-  body.classList.add('ir-active');
-  body.style.setProperty('--ir-accent', s.accentColor);
-  body.style.setProperty('--ir-border-radius', s.borderRadius + 'px');
-  body.style.setProperty('--ir-card-blur', s.cardBlur + 'px');
-
-  THEME_CLASSES.forEach(c => body.classList.remove(c));
-  if (s.theme && s.theme !== 'default') body.classList.add('ir-theme-' + s.theme);
-
-  LAYOUT_CLASSES.forEach(c => body.classList.remove(c));
-  if (s.layoutMode && s.layoutMode !== 'default') body.classList.add('ir-layout-' + s.layoutMode);
-
-  buildBgLayer(s);
-  toggleClass(body, 'ir-glassmorphism', s.glassmorph);
-  toggleClass(body, 'ir-focus-mode', s.focusMode);
-  toggleClass(body, 'ir-hide-sidebar', s.hideSidebar);
-  toggleClass(body, 'ir-hide-suggestions', s.hideRecs);
-
-  if (s.customFont) { body.classList.add('ir-custom-font'); body.style.setProperty('--ir-font', s.customFont); }
-  else body.classList.remove('ir-custom-font');
-
-  if (s.showProfileWidget && !widgetHidden) buildWidget(s);
-  else removeWidget();
-
-  addBadge();
-
-  // Download buttons — inject after short delay for DOM to settle
-  if (s.showDownloadBar !== false) {
-    setTimeout(injectDownloadButtons, 1200);
-  } else {
-    removeDownloadButtons();
-  }
-}
-
-// ── Background ───────────────────────────────────────
-function buildBgLayer(s) {
-  removeBgLayer();
-  const layer = document.createElement('div');
-  layer.id = 'ir-bg-layer';
-  layer.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-9999;pointer-events:none;overflow:hidden;opacity:${s.bgOpacity};`;
-
-  if (s.bgType === 'color' || s.bgType === 'gradient') {
-    const fill = document.createElement('div');
-    fill.style.cssText = `width:100%;height:100%;background:${s.bgValue};`;
-    layer.appendChild(fill);
-  } else if (s.bgType === 'url' || s.bgType === 'preset') {
-    const img = document.createElement('img');
-    img.src = s.bgValue;
-    img.style.cssText = `width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:blur(${s.bgBlur}px);transform:scale(${s.bgBlur>0?1.06:1});transition:filter 0.3s;`;
-    img.onerror = () => { layer.innerHTML=''; const f=document.createElement('div'); f.style.cssText='width:100%;height:100%;background:#1a1a2e;'; layer.appendChild(f); };
-    layer.appendChild(img);
-  } else if (s.bgType === 'local') {
-    chrome.storage.local.get('irLocalBg', (data) => {
-      if (!data.irLocalBg) return;
-      const img = document.createElement('img');
-      img.src = data.irLocalBg;
-      img.style.cssText = `width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:blur(${s.bgBlur}px);transform:scale(${s.bgBlur>0?1.06:1});`;
-      layer.appendChild(img);
-    });
-  }
-  document.body.insertBefore(layer, document.body.firstChild);
-}
-function removeBgLayer() { document.getElementById('ir-bg-layer')?.remove(); }
-
-// ── Profile Widget ───────────────────────────────────
-// Profile collection logic moved to message listeners
-function scrapeProfile() {
-  const d = {};
-  // ... (keep the scraping logic for the popup to use)
-  const d = {};
-  try {
-    // ── Handle from URL ──
-    const parts = location.pathname.split('/').filter(Boolean);
-    if (parts.length && !['explore','reels','direct','stories','accounts','p'].includes(parts[0])) {
-      d.handle = parts[0];
-    }
-
-    // ── Avatar: look for profile pic in header area ──
-    // Instagram renders profile pic as img inside header or near the top of main
-    const avatarCandidates = [
-      ...document.querySelectorAll('header img'),
-      ...document.querySelectorAll('main img'),
-      ...document.querySelectorAll('nav img'),
-      ...document.querySelectorAll('img[alt*="profile"], img[alt*="avatar"]'),
-    ];
-    for (const img of avatarCandidates) {
-      if (img.src && (img.src.includes('cdninstagram') || img.src.includes('fbcdn'))
-          && img.naturalWidth >= 30 && img.naturalWidth <= 200) {
-        d.avatar = img.src; break;
-      }
-    }
-
-    // ── On a profile page: scrape name, stats, bio ──
-    if (parts.length === 1) {
-      // Name: usually an h1 or h2 near the profile header
-      const nameEl = document.querySelector('main h1, main h2, header h1, header h2');
-      if (nameEl) d.name = nameEl.textContent.trim().slice(0, 40);
-
-      // Stats: Instagram renders them as list items with a number + label
-      // Pattern: <li><a><span>139</span></a><span>followers</span></li>
-      const listItems = document.querySelectorAll('main ul li, header ul li');
-      listItems.forEach(li => {
-        const text = li.textContent.toLowerCase();
-        const numEl = li.querySelector('span[class]') || li.querySelector('span');
-        const num = numEl ? numEl.textContent.trim() : '';
-        if (text.includes('post')) d.posts = num;
-        else if (text.includes('follower')) d.followers = num;
-        else if (text.includes('following')) d.following = num;
-      });
-
-      // Fallback: look for numbers near known labels anywhere in main
-      if (!d.posts || !d.followers) {
-        document.querySelectorAll('main a[href*="followers"], main a[href*="following"]').forEach(a => {
-          const num = a.querySelector('span')?.textContent?.trim() || a.textContent.trim().split(' ')[0];
-          if (a.href.includes('followers')) d.followers = num;
-          else if (a.href.includes('following')) d.following = num;
-        });
-        // Posts count
-        const postLink = document.querySelector('main a[href$="/"]');
-        if (postLink) {
-          const spans = postLink.querySelectorAll('span');
-          if (spans.length) d.posts = spans[0].textContent.trim();
-        }
-      }
-    }
-
-    // ── Sidebar / nav avatar for logged-in user ──
-    if (!d.name) {
-      // Try the account switcher or nav area for logged-in user's name
-      const navImgs = document.querySelectorAll('nav img, [role="navigation"] img');
-      for (const img of navImgs) {
-        if (img.src && (img.src.includes('cdninstagram') || img.src.includes('fbcdn'))) {
-          d.avatar = img.src; break;
-        }
-      }
-      // Try to get name from meta tags
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        const content = ogTitle.getAttribute('content') || '';
-        // Format: "Name (@handle)"
-        const match = content.match(/^(.+?)\s*\(@([^)]+)\)/);
-        if (match) { d.name = match[1].trim(); if (!d.handle) d.handle = match[2]; }
-        else d.name = content.split('•')[0].trim().slice(0, 40);
-      }
-    }
-
-  } catch(e) { console.warn('[InstaRemix] scrape error', e); }
-  return d;
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function removeWidget() { document.getElementById('ir-profile-widget')?.remove(); }
-function removeTerminalLog() { document.getElementById('ir-terminal-log')?.remove(); }
-function removeLiveUplink() { document.getElementById('ir-live-uplink')?.remove(); }
-
-// ── Download Buttons ─────────────────────────────────
-const DL_PREFIX = 'Insta-Remix_Mauxx-AI';
-
-function getFilename(type, ext) {
-  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-  return `${DL_PREFIX}_${type}_${ts}.${ext}`;
-}
-
-async function downloadUrl(url, filename) {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage({
-      action: 'downloadFile',
-      url: url,
-      filename: filename
-    }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('[InstaRemix DL Script Error]', chrome.runtime.lastError);
-        resolve(false);
-      } else {
-        if (!response?.success) console.error('[InstaRemix DL Backend Error]', response?.error);
-        resolve(response?.success || false);
-      }
-    });
-  });
-}
-
-function findMediaInEl(el) {
-  // video first
-  const vid = el.querySelector('video[src], video source');
-  if (vid) return { type:'video', url: vid.src || vid.querySelector('source')?.src };
-  // highest-res img
-  let bestImg = null, bestW = 0;
-  el.querySelectorAll('img').forEach(img => {
-    if ((img.src.includes('cdninstagram') || img.src.includes('fbcdn')) && img.naturalWidth > bestW) {
-      bestW = img.naturalWidth; bestImg = img;
-    }
-  });
-  if (bestImg) return { type:'image', url: bestImg.src };
-  return null;
-}
-
-function detectContext() {
-  const p = location.pathname;
-  if (p.includes('/stories/')) return 'story';
-  if (p.includes('/reel') ) return 'reel';
-  if (p.match(/\/p\//)) return 'post';
-  return 'post';
-}
-
-function injectDownloadButtons() {
-  // Posts in feed
-  document.querySelectorAll('article').forEach(article => {
-    if (article.querySelector('.ir-dl-btn-post')) return;
-    article.style.position = 'relative';
-
-    const btn = document.createElement('div');
-    btn.className = 'ir-dl-btn-post';
-    btn.title = 'Download (InstaRemix)';
-    btn.innerHTML = '⬇';
-
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation(); e.preventDefault();
-      btn.innerHTML = '…';
-      const media = findMediaInEl(article);
-      if (!media) { showToast('No media found', true); btn.innerHTML='⬇'; return; }
-      const ext = media.type === 'video' ? 'mp4' : 'jpg';
-      const ok = await downloadUrl(media.url, getFilename(detectContext(), ext));
-      if (ok) { btn.innerHTML = '✓'; btn.classList.add('done'); setTimeout(()=>{ btn.innerHTML='⬇'; btn.classList.remove('done'); }, 2500); showToast('Downloaded!'); }
-      else { btn.innerHTML = '⬇'; showToast('Failed — try right-click > Save', true); }
-    });
-
-    article.appendChild(btn);
-  });
-
-  // Reel page — single centered button
-  if (location.pathname.includes('/reel')) {
-    if (!document.getElementById('ir-dl-reel-btn')) {
-      const btn = document.createElement('div');
-      btn.id = 'ir-dl-reel-btn';
-      btn.innerHTML = '⬇ Download Reel';
-      btn.addEventListener('click', async () => {
-        btn.innerHTML = '…';
-        const vid = document.querySelector('video');
-        if (!vid?.src) { showToast('Reel not ready yet', true); btn.innerHTML='⬇ Download Reel'; return; }
-        const ok = await downloadUrl(vid.src, getFilename('reel','mp4'));
-        btn.innerHTML = ok ? '✓ Saved!' : '⬇ Download Reel';
-        if (ok) { showToast('Reel downloaded!'); setTimeout(()=>{ btn.innerHTML='⬇ Download Reel'; },2500); }
-        else showToast('Failed — video may be DRM protected', true);
-      });
-      document.body.appendChild(btn);
-    }
-  } else {
-    document.getElementById('ir-dl-reel-btn')?.remove();
-  }
-}
-
-function removeDownloadButtons() {
-  document.querySelectorAll('.ir-dl-btn-post').forEach(b => b.remove());
-  document.getElementById('ir-dl-reel-btn')?.remove();
-}
-
-// ── Toast ────────────────────────────────────────────
-function showToast(msg, isErr=false) {
-  let t = document.getElementById('ir-toast');
-  if (!t) { t=document.createElement('div'); t.id='ir-toast'; document.body.appendChild(t); }
-  t.textContent = isErr ? '✗ '+msg : '✓ '+msg;
-  t.className = isErr ? 'ir-err' : '';
-  void t.offsetWidth;
-  t.classList.add('show');
-  clearTimeout(t._t);
-  t._t = setTimeout(()=>t.classList.remove('show'), 3000);
-}
-
-// ── Utils ─────────────────────────────────────────────
-function toggleClass(el, cls, cond) { cond ? el.classList.add(cls) : el.classList.remove(cls); }
-function addBadge() {
-  if (document.getElementById('ir-badge')) return;
-  const b=document.createElement('div'); b.id='ir-badge'; b.textContent='INSTAREMIX';
-  document.body.appendChild(b);
-}
-function removeBadge() { document.getElementById('ir-badge')?.remove(); }
-
-// ── Load & message listener ───────────────────────────
-function loadAndApply() {
-  chrome.storage.sync.get('irSettings', (data) => {
-    if (data.irSettings) settings = { ...DEFAULTS, ...data.irSettings };
-    widgetHidden = false;
-    applySettings(settings);
-  });
-}
-
-chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.action === 'updateSettings') {
-    settings = { ...DEFAULTS, ...msg.settings };
-    widgetHidden = false;
-    applySettings(settings);
-  }
-  if (msg.action === 'getProfile') {
-    const d = scrapeProfile();
-    try { chrome.runtime.sendMessage({ action:'profileData', data:d }); } catch(e) {}
-  }
-});
-
-loadAndApply();
-
-// Re-scrape widget after page content loads
-setTimeout(() => {
-  if (settings.enabled && settings.showProfileWidget && !widgetHidden) buildWidget(settings);
-}, 2000);
-
-// SPA navigation
-let lastUrl = location.href;
-new MutationObserver(() => {
-  if (location.href !== lastUrl) {
-    lastUrl = location.href;
-    widgetHidden = false;
-    setTimeout(() => {
-      loadAndApply();
-      // Re-inject download buttons on new page
-      if (settings.enabled && settings.showDownloadBar !== false) {
-        setTimeout(injectDownloadButtons, 1500);
-      }
-    }, 800);
-  }
-}).observe(document, { subtree:true, childList:true });
-
-// ── High-Performance Spatial Observer (Senior Developer Pattern) ──
-let throttleTimer = null;
-const UI_REPLACEMENT_DELAY = 450;
-
-function startOptimizedObserver() {
-  const observer = new MutationObserver((mutations) => {
-    if (throttleTimer) return;
-    
-    throttleTimer = setTimeout(() => {
-      throttleTimer = null;
+  // ── Components ─────────────────────────────────────
+  UI: {
+    initShadow() {
+      if (InstaBook.state.shadowRoot) return;
+      const host = document.createElement('div');
+      host.id = 'instabook-secure-root';
+      host.style.cssText = 'position:fixed;top:0;left:0;z-index:999999;pointer-events:none;';
+      document.body.appendChild(host);
+      InstaBook.state.shadowRoot = host.attachShadow({ mode: 'open' });
       
-      const hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
-      if (hasAddedNodes) {
-        if (settings.enabled && settings.showDownloadBar !== false) injectDownloadButtons();
+      // Inject Shadow Styles
+      const style = document.createElement('style');
+      style.textContent = `
+        :host { --accent: #a78bfa; }
+        .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px); background:rgba(12,12,20,0.9); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:10px 20px; border-radius:10px; font-family:sans-serif; font-size:13px; transition:all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); opacity:0; pointer-events:auto; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+        .badge { position:fixed; top:15px; left:15px; font-size:9px; font-weight:900; background:linear-gradient(135deg,#7c3aed,#a78bfa); color:#fff; padding:3px 8px; border-radius:4px; letter-spacing:1px; opacity:0.8; }
+      `;
+      InstaBook.state.shadowRoot.appendChild(style);
+    },
+
+    showToast(msg, isErr = false) {
+      InstaBook.UI.initShadow();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = (isErr ? '✗ ' : '✓ ') + msg;
+      if (isErr) t.style.borderColor = '#f87171';
+      InstaBook.state.shadowRoot.appendChild(t);
+      
+      setTimeout(() => t.classList.add('show'), 100);
+      setTimeout(() => {
+        t.classList.remove('show');
+        setTimeout(() => t.remove(), 500);
+      }, 3500);
+    },
+
+    addBadge() {
+      if (InstaBook.state.shadowRoot.querySelector('.badge')) return;
+      const b = document.createElement('div');
+      b.className = 'badge';
+      b.textContent = 'INSTABOOK_SECURE_ENTERPRISE';
+      InstaBook.state.shadowRoot.appendChild(b);
+    }
+  },
+
+  // ── Controllers ────────────────────────────────────
+  Controllers: {
+    Layout: {
+      apply(s) {
+        const body = document.body;
+        if (!s.enabled) {
+          body.classList.remove('ir-active', 'ir-glassmorphism', 'ir-focus-mode', 
+            'ir-hide-sidebar', 'ir-hide-suggestions', 'ir-custom-font', 
+            ...InstaBook.config.themes, ...InstaBook.config.layouts);
+          return;
+        }
+        body.classList.add('ir-active');
+        body.style.setProperty('--ir-accent', s.accentColor);
+        body.style.setProperty('--ir-border-radius', s.borderRadius + 'px');
+        body.style.setProperty('--ir-card-blur', s.cardBlur + 'px');
+
+        InstaBook.config.themes.forEach(c => body.classList.remove(c));
+        if (s.theme && s.theme !== 'default') body.classList.add('ir-theme-' + s.theme);
+
+        InstaBook.config.layouts.forEach(c => body.classList.remove(c));
+        if (s.layoutMode && s.layoutMode !== 'default') body.classList.add('ir-layout-' + s.layoutMode);
+
+        InstaBook.Utils.toggleClass(body, 'ir-glassmorphism', s.glassmorph);
+        InstaBook.Utils.toggleClass(body, 'ir-focus-mode', s.focusMode);
+        InstaBook.Utils.toggleClass(body, 'ir-hide-sidebar', s.hideSidebar);
+        InstaBook.Utils.toggleClass(body, 'ir-hide-suggestions', s.hideRecs);
+
+        if (s.customFont) {
+          body.classList.add('ir-custom-font');
+          body.style.setProperty('--ir-font', s.customFont);
+        } else {
+          body.classList.remove('ir-custom-font');
+        }
+
+        InstaBook.Controllers.Layout.applyBg(s);
+      },
+
+      applyBg(s) {
+        document.getElementById('ir-bg-layer')?.remove();
+        document.body.classList.remove('ir-has-custom-bg');
+        if (!s.enabled) return;
+
+        const layer = document.createElement('div');
+        layer.id = 'ir-bg-layer';
+        layer.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;opacity:${s.bgOpacity};`;
+
+        if ((s.bgType === 'preset' || s.bgType === 'url') && s.bgValue) {
+          document.body.classList.add('ir-has-custom-bg');
+          const img = document.createElement('img');
+          img.src = s.bgValue; // already a full URL for presets; direct URL for url type
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:center;display:block;';
+          if (s.bgBlur > 0) img.style.filter = `blur(${s.bgBlur}px)`;
+          layer.appendChild(img);
+        } else if (s.bgType === 'local') {
+          document.body.classList.add('ir-has-custom-bg');
+          chrome.storage.local.get('irLocalBg', (data) => {
+            if (data.irLocalBg) {
+              const img = document.createElement('img');
+              img.src = data.irLocalBg;
+              img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:center;display:block;';
+              if (s.bgBlur > 0) img.style.filter = `blur(${s.bgBlur}px)`;
+              layer.appendChild(img);
+            }
+          });
+        } else if (s.bgType === 'color' && s.bgValue) {
+          document.body.classList.add('ir-has-custom-bg');
+          const fill = document.createElement('div');
+          fill.style.cssText = `width:100%;height:100%;background-color:${s.bgValue};`;
+          layer.appendChild(fill);
+        } else if (s.bgType === 'gradient' && s.bgValue) {
+          document.body.classList.add('ir-has-custom-bg');
+          const fill = document.createElement('div');
+          fill.style.cssText = `width:100%;height:100%;background:${s.bgValue};`;
+          layer.appendChild(fill);
+        } else {
+          return; // no valid bg configured
+        }
+
+        document.body.appendChild(layer);
       }
-    }, UI_REPLACEMENT_DELAY);
-  });
+    },
 
-  observer.observe(document.body, { childList: true, subtree: true });
-}
+    Media: {
+      async injectButtons() {
+        const s = InstaBook.state.settings;
+        if (!s.enabled || s.showDownloadBar === false) {
+          document.querySelectorAll('.ir-dl-btn-post').forEach(b => b.remove());
+          document.getElementById('ir-dl-reel-btn')?.remove();
+          return;
+        }
 
-startOptimizedObserver();
+        // Feed Articles
+        document.querySelectorAll('article:not([data-ib-processed])').forEach(article => {
+          article.setAttribute('data-ib-processed', 'true');
+          article.style.position = 'relative';
+
+          const btn = document.createElement('div');
+          btn.className = 'ir-dl-btn-post';
+          btn.title = 'Secure Save (InstaBook)';
+          btn.innerHTML = '⬇';
+
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation(); e.preventDefault();
+            btn.innerHTML = '…';
+            const media = InstaBook.Utils.findMedia(article);
+            if (!media) { InstaBook.UI.showToast('No media found', true); btn.innerHTML='⬇'; return; }
+            
+            const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+            const ext = media.type === 'video' ? 'mp4' : 'jpg';
+            const filename = `InstaBook_Secure_${media.type}_${ts}.${ext}`;
+            
+            chrome.runtime.sendMessage({ action: 'downloadFile', url: media.url, filename }, (res) => {
+              if (res?.success) {
+                btn.innerHTML = '✓';
+                btn.classList.add('done');
+                setTimeout(() => { btn.innerHTML='⬇'; btn.classList.remove('done'); }, 2500);
+                InstaBook.UI.showToast('Media Secured!');
+              } else {
+                btn.innerHTML = '⬇';
+                InstaBook.UI.showToast('Failed to secure media', true);
+              }
+            });
+          });
+          article.appendChild(btn);
+        });
+
+        // Reel Page
+        if (location.pathname.includes('/reel/')) {
+          if (!document.getElementById('ir-dl-reel-btn')) {
+            const btn = document.createElement('div');
+            btn.id = 'ir-dl-reel-btn';
+            btn.innerHTML = '⬇ Secure Reel';
+            btn.onclick = () => {
+              const vid = document.querySelector('video');
+              let videoUrl = null;
+              if (vid) {
+                const source = vid.querySelector('source[src]');
+                const candidate = (source && source.src) || vid.src || '';
+                if (candidate && !candidate.startsWith('blob:')) videoUrl = candidate;
+              }
+              if (!videoUrl) { InstaBook.UI.showToast('Reel source not accessible', true); return; }
+              const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+              btn.innerHTML = '…';
+              chrome.runtime.sendMessage(
+                { action: 'downloadFile', url: videoUrl, filename: `InstaBook_Reel_${ts}.mp4` },
+                (res) => {
+                  if (res?.success) {
+                    btn.innerHTML = '✓ Secured';
+                    setTimeout(() => { btn.innerHTML = '⬇ Secure Reel'; }, 2500);
+                    InstaBook.UI.showToast('Reel Secured!');
+                  } else {
+                    btn.innerHTML = '⬇ Secure Reel';
+                    InstaBook.UI.showToast('Download failed', true);
+                  }
+                }
+              );
+            };
+            document.body.appendChild(btn);
+          }
+        }
+      }
+    }
+  },
+
+  // ── Utility Functions ──────────────────────────────
+  Utils: {
+    toggleClass(el, cls, cond) { cond ? el.classList.add(cls) : el.classList.remove(cls); },
+    
+    findMedia(el) {
+      // Check video[src] or video > source[src]; skip blob: URLs (page-scoped, SW can't fetch them)
+      const vid = el.querySelector('video[src]') || el.querySelector('video');
+      if (vid) {
+        const source = vid.querySelector('source[src]');
+        const src = (source && source.src) || vid.src || '';
+        if (src && !src.startsWith('blob:')) return { type: 'video', url: src };
+      }
+
+      let bestImg = null, bestW = 0;
+      el.querySelectorAll('img').forEach(img => {
+        if (img.naturalWidth > bestW) {
+          bestW = img.naturalWidth; bestImg = img;
+        }
+      });
+      return bestImg ? { type: 'image', url: bestImg.src } : null;
+    },
+
+    debounce(fn, delay) {
+      let timer = null;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    }
+  },
+
+  // ── Core Lifecycle ─────────────────────────────────
+  apply() {
+    InstaBook.UI.initShadow();
+    InstaBook.Controllers.Layout.apply(InstaBook.state.settings);
+    InstaBook.Controllers.Media.injectButtons();
+    if (InstaBook.state.settings.enabled) InstaBook.UI.addBadge();
+  },
+
+  init() {
+    chrome.storage.sync.get('irSettings', (data) => {
+      InstaBook.state.settings = { ...InstaBook.config.defaults, ...data.irSettings };
+      InstaBook.apply();
+      InstaBook.startObserver();
+    });
+
+    chrome.runtime.onMessage.addListener((msg) => {
+      if (msg.action === 'updateSettings') {
+        InstaBook.state.settings = { ...InstaBook.config.defaults, ...msg.settings };
+        InstaBook.apply();
+      }
+    });
+
+    console.log('%c[InstaBook Secure] v4.0.0 Enterprise Core Initialized', 'color: #7c3aed; font-weight: bold;');
+  },
+
+  startObserver() {
+    if (InstaBook.state.observer) InstaBook.state.observer.disconnect();
+    
+    const debouncedInject = InstaBook.Utils.debounce(() => {
+      if (InstaBook.state.settings.enabled) InstaBook.Controllers.Media.injectButtons();
+    }, 500);
+
+    InstaBook.state.observer = new MutationObserver((mutations) => {
+      const hasStructuralChange = mutations.some(m => m.addedNodes.length > 0);
+      if (hasStructuralChange) debouncedInject();
+    });
+
+    InstaBook.state.observer.observe(document.body, { childList: true, subtree: true });
+  }
+};
+
+InstaBook.init();
+})();
+

@@ -1,0 +1,14 @@
+{
+  "ext_name_production": {
+    "message": "INSTABOOK | Web Client for Instagram"
+  },
+  "ext_name_beta": {
+    "message": "INSTABOOK BETA | Web Client for Instagram"
+  },
+  "ext_name_dev": {
+    "message": "INSTABOOK DEV | Web Client for Instagram"
+  },
+  "ext_description": {
+    "message": "Grow your Instagram. Post Instagram stories, reels, photos from web. Download, schedule posts, track unfollowers, remove bots."
+  }
+}
